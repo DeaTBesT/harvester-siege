@@ -11,7 +11,7 @@ namespace Player
         private EntityWeaponController _entityWeaponController;
         private Collider2D _collider;
         private Transform _graphics;
-        
+
         public override void Initialize(params object[] objects)
         {
             _entityStats = objects[0] as EntityStats;
@@ -21,11 +21,11 @@ namespace Player
             _graphics = objects[4] as Transform;
         }
 
-        public override void ActivateEntity() => 
+        public override void ActivateEntity() =>
             ActivateEntityCmd();
 
         [Command(requiresAuthority = false)]
-        private void ActivateEntityCmd() => 
+        private void ActivateEntityCmd() =>
             ActivateEntityRpc();
 
         [ClientRpc]
@@ -37,12 +37,12 @@ namespace Player
             _collider.enabled = true;
             _graphics.gameObject.SetActive(true);
         }
-        
-        public override void DiactivateEntity() => 
+
+        public override void DiactivateEntity() =>
             DiactivateEntityCmd();
 
         [Command(requiresAuthority = false)]
-        private void DiactivateEntityCmd() => 
+        private void DiactivateEntityCmd() =>
             DiactivateEntityRpc();
 
         [ClientRpc]
@@ -54,5 +54,16 @@ namespace Player
             _collider.enabled = false;
             _graphics.gameObject.SetActive(false);
         }
+
+        public override void ChangePosition(Vector2 newPosition) => 
+            ChangePositionCmd(newPosition);
+
+        [Command(requiresAuthority = false)]
+        private void ChangePositionCmd(Vector2 newPosition) =>
+            ChangePositionRpc(newPosition);
+
+        [ClientRpc]
+        private void ChangePositionRpc(Vector2 newPosition) =>
+            transform.position = newPosition;
     }
 }

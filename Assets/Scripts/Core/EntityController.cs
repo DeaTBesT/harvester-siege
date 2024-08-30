@@ -1,5 +1,6 @@
 ﻿using Interfaces;
 using Mirror;
+using UnityEngine;
 
 namespace Core
 {
@@ -12,5 +13,7 @@ namespace Core
         public abstract void ActivateEntity();
 
         public abstract void DiactivateEntity();
+        
+        public abstract void ChangePosition(Vector2 newPosition);
     }
 }
