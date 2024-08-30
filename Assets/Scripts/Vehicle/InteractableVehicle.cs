@@ -4,15 +4,20 @@ using InputModule;
 using Interfaces;
 using Mirror;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Vehicle
 {
     public class InteractableVehicle : NetworkBehaviour, IInitialize, IInteractable
     {
         private const int NUMBER_PLAYER_TAKE_SEAT = 1;
-
+        private const float PLAYER_COLLIDER_RADIUS = 0.5f;
+        
         [SerializeField] private int _seatsNumber = 1;
 
+        [SerializeField] private Transform[] _exitPositions;
+        [SerializeField] private LayerMask _preventingColliderLayer;
+        
         [SyncVar] private int _takeSeats;
 
         private readonly SyncList<NetworkIdentity> _takeSeatsObjects = new();
@@ -65,11 +70,17 @@ namespace Vehicle
         {
             var interactorNetId = interactor.InteractableNetId;
 
+            if (!TryExitVehicle(out Vector2 exitPosition))
+            {
+                return;
+            }
+            
             RemovePlayerSeat(interactorNetId);
 
             if (interactorNetId.TryGetComponent(out EntityController entityController))
             {
                 entityController.ActivateEntity();
+                entityController.ChangePosition(exitPosition);
             }
 
             if (interactorNetId.TryGetComponent(out InputHandler inputHandlerExitPlayer))
@@ -81,7 +92,7 @@ namespace Vehicle
             {
                 cameraController.ChangeTarget(interactorNetId);
             }
-
+            
             OnFinishInteract?.Invoke();
         }
 
@@ -114,6 +125,34 @@ namespace Vehicle
             {
                 _inputHandler.SetEnableByNetId(_takeSeatsObjects[0], _takeSeats == 1);
             }
+        }
+
+        private bool TryExitVehicle(out Vector2 exitPosition)
+        {
+            bool isCanExit = false;
+            exitPosition = Vector2.zero;
+
+            if (_exitPositions.Length <= 0)
+            {
+#if UNITY_EDITOR
+                Debug.LogError("None exit positions");
+#endif
+                return isCanExit;
+            }
+            
+            foreach (var exit in _exitPositions)
+            {
+                Collider2D[] collider = Physics2D.OverlapCircleAll(exit.position, PLAYER_COLLIDER_RADIUS, _preventingColliderLayer);
+
+                if (collider.Length <= 0)
+                {
+                    isCanExit = true;
+                    exitPosition = exit.position;
+                    break;
+                }
+            }
+
+            return isCanExit;
         }
     }
 }
