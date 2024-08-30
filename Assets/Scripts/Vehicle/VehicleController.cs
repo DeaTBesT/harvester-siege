@@ -1,4 +1,5 @@
 ﻿using Core;
+using UnityEngine;
 
 namespace Vehicle
 {
@@ -15,6 +16,11 @@ namespace Vehicle
         }
 
         public override void DiactivateEntity()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void ChangePosition(Vector2 newPosition)
         {
             throw new System.NotImplementedException();
         }
