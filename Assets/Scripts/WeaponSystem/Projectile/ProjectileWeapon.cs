@@ -53,9 +53,5 @@ namespace WeaponSystem.Projectile
                     _projectileConfig.DestroyTime, onReachTarget);
             }
         }
-
-        private GameObject SpawnHandler(SpawnMessage msg) => _bulletsPool.Get();
-
-        private void UnSpawnHandler(GameObject spawned) => _bulletsPool.Return(spawned);
     }
 }
