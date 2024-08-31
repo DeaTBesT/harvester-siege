@@ -17,23 +17,14 @@ namespace WeaponSystem.Projectile
         private ProjectileWeaponConfig _projectileConfig;
 
         private static bool _isPrefabRegistered;
-        
+
         public override void Initialize(params object[] objects)
         {
             base.Initialize(objects);
 
             _bulletsPool = new GameObjectPool(_bulletPrefab, BULLETS_PRELOAD_COUNT);
             _projectileConfig = (ProjectileWeaponConfig)_weaponConfig;
-
-            if (!_isPrefabRegistered)
-            {
-                NetworkClient.RegisterPrefab(_bulletPrefab, SpawnHandler, UnSpawnHandler);
-                _isPrefabRegistered = true;
-            }
         }
-
-        public override void Deinitialize() =>
-            NetworkClient.UnregisterPrefab(_bulletPrefab);
 
         [Command]
         public override void UseWeapon()
@@ -45,7 +36,7 @@ namespace WeaponSystem.Projectile
 
             _nextAttackTime = Time.time + 1f / _weaponConfig.FireRate;
 
-            GameObject bulletObject = _bulletsPool.Get();
+            var bulletObject = _bulletsPool.Get();
             bulletObject.transform.position = _spawnPivot.position;
             bulletObject.transform.rotation = _spawnPivot.rotation;
             NetworkServer.Spawn(bulletObject.gameObject);

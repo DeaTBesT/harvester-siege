@@ -50,42 +50,29 @@ namespace WeaponSystem.Core
                 entityStats.TakeDamage(_teamId, _damage);
             }
 
-            ForceDestroy();//TODO:fix destroy object
+            ForceDestroy();
         }
 
-        private void ForceDestroy() => 
-            DestroyBulletCmd();
-
-        private void DestroyDelay(int destroyTime) => 
-            Invoke(nameof(DestroyDelayCmd), destroyTime);
-
-        [Command(requiresAuthority = false)]
-        private void DestroyDelayCmd() => 
-            DestroyDelayServer();
-
-        [Server]
-        private void DestroyDelayServer() => 
-            DestroyBulletServer();
-
-        [Command(requiresAuthority = false)]
-        private void DestroyBulletCmd()
+        private void ForceDestroy()
         {
             if (!isActiveAndEnabled)
             {
                 return;
             }
             
-            DestroyBulletServer();
+            DestroyBulletCmd();
         }
+
+        private void DestroyDelay(int destroyTime) => 
+            Invoke(nameof(ForceDestroy), destroyTime);
+
+        [Command(requiresAuthority = false)]
+        private void DestroyBulletCmd() => 
+            DestroyBulletServer();
 
         [Server]
         private void DestroyBulletServer()
         {
-            if (!isActiveAndEnabled)
-            {
-                return;
-            }
-            
             _onReachTarget();
             CancelInvoke();
         }
