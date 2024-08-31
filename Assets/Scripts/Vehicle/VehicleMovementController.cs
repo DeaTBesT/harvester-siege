@@ -106,25 +106,26 @@ namespace Vehicle
                 ? Mathf.Lerp(_rigidbody2d.drag, RIGIDBODY_DRAG_IDLE, Time.fixedDeltaTime * 3f)
                 : RIGIDBODY_DRAG_DRIVE;
 
-            Vector2 engineForceVector = transform.up * _accelerationInput * _accelerationFactor;
+            var engineForceVector = transform.up * _accelerationInput * _accelerationFactor;
             _rigidbody2d.AddForce(engineForceVector, ForceMode2D.Force);
         }
 
         private void ResetVelocity()
         {
-            Vector2 forwardVelocity = transform.up * Vector2.Dot(_rigidbody2d.velocity, transform.up);
-            Vector2 rightVelocity = transform.right * Vector2.Dot(_rigidbody2d.velocity, transform.right);
+            var forwardVelocity = transform.up * Vector2.Dot(_rigidbody2d.velocity, transform.up);
+            var rightVelocity = transform.right * Vector2.Dot(_rigidbody2d.velocity, transform.right);
 
-            Vector2 velocity = forwardVelocity + rightVelocity * _driftFactor;
+            var velocity = forwardVelocity + rightVelocity * _driftFactor;
             _rigidbody2d.velocity = velocity;
         }
 
         private void ApplySteering()
         {
-            float minSpeedForTurning = _rigidbody2d.velocity.magnitude / RIGIDBODY_MAGNITUDE_DEVIDER;
+            var minSpeedForTurning = _rigidbody2d.velocity.magnitude / RIGIDBODY_MAGNITUDE_DEVIDER;
             minSpeedForTurning = Mathf.Clamp01(minSpeedForTurning);
 
-            _rotationAngle -= _steeringInput * _turnFactor * minSpeedForTurning;
+            var steering = _velocityUp >= 0 ? 1 : -1;
+            _rotationAngle -= _steeringInput  * steering * _turnFactor * minSpeedForTurning;
 
             _rigidbody2d.MoveRotation(_rotationAngle);
         }
