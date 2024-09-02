@@ -4,7 +4,6 @@ using InputModule;
 using Interfaces;
 using Mirror;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Vehicle
 {
@@ -26,8 +25,9 @@ namespace Vehicle
 
         public int TakeSeats => _takeSeats;
 
+        public bool OneTimeInteract => false;
+        
         public Action OnInteract { get; set; }
-
         public Action OnFinishInteract { get; set; }
 
         public bool IsEnable { get; set; }

@@ -56,8 +56,11 @@ namespace Player
             {
                 if (interactable.TryInteract(this))
                 {
-                    _currentInteractable = interactable;
-                    ChangeInteractionEvents();
+                    if (!interactable.OneTimeInteract)
+                    {
+                        _currentInteractable = interactable;
+                        ChangeInteractionEvents();
+                    }
                 }
             }
         }
