@@ -1,5 +1,8 @@
 ﻿using Core;
 using InputModule;
+using Managers;
+using Mirror;
+using Player;
 using PlayerInputModule;
 using UnityEngine;
 
@@ -15,6 +18,8 @@ namespace PlayerModule
         [SerializeField] private EntityMovementController _entityMovementController;
         [SerializeField] private EntityWeaponController _entityWeaponController;
         [SerializeField] private EntityInteractionController _entityInteractionController;
+        [SerializeField] private EntityInventoryController _entityInventoryController;
+        [SerializeField] private PlayerUIController _playerUIController;
         [SerializeField] private InputHandler _inputHandler;
         [SerializeField] private CameraController _cameraController;
 
@@ -46,10 +51,20 @@ namespace PlayerModule
             {
                 _entityWeaponController = GetComponent<EntityWeaponController>();
             }
-            
+
             if (_entityInteractionController == null)
             {
                 _entityInteractionController = GetComponent<EntityInteractionController>();
+            } 
+            
+            if (_entityInventoryController == null)
+            {
+                _entityInventoryController = GetComponent<EntityInventoryController>();
+            }
+
+            if (_playerUIController == null)
+            {
+                _playerUIController = GetComponent<PlayerUIController>();
             }
 
             if (_inputHandler == null)
@@ -86,6 +101,7 @@ namespace PlayerModule
             // }
 
             var inputModule = new PlayerInput(_camera);
+            var gameResourcesManager = GameResourcesManager.Instance;
 
             // ReSharper disable Unity.NoNullPropagation
             _entityStats?.Initialize();
@@ -103,6 +119,9 @@ namespace PlayerModule
                 _entityWeaponController,
                 _collider,
                 _graphics);
+
+            _entityInventoryController.Initialize(gameResourcesManager);
+            _playerUIController?.Initialize(gameResourcesManager);
         }
 
         protected override void Deinitialize()
