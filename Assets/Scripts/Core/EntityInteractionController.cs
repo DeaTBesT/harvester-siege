@@ -40,7 +40,7 @@ namespace Core
 
         public abstract void OnEndInteract();
 
-        public virtual void ChangeInteractionEvents()
+        protected virtual void ChangeInteractionEvents()
         {
             _isInteract = !_isInteract;
 

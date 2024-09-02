@@ -17,10 +17,8 @@ namespace WeaponSystem.Core
 
         public bool IsEnable { get; set; }
         
-        public virtual void Initialize(params object[] objects)
-        {
+        public virtual void Initialize(params object[] objects) => 
             _entityStats = objects[0] as EntityStats;
-        }
 
         public virtual void Deinitialize()
         {
