@@ -31,7 +31,7 @@ namespace Player
             
             _resourcesManager = objects[0] as GameResourcesManager;
 
-            if (_resourcesManager != null)
+            if ((_resourcesManager != null) && (isLocalPlayer))
             {
                 _resourcesManager.OnAddResource += OnAddResource;
                 _resourcesManager.OnChangeResourcesData += OnChangeResources;
@@ -64,11 +64,8 @@ namespace Player
 #endif
         }
 
-        private void OnChangeResources(List<ResourceData> dataList)
-        {
-            Debug.Log("Change resource");
+        private void OnChangeResources(List<ResourceData> dataList) => 
             GenerateResourcesPanel(dataList);
-        }
 
         private void OnRemoveResource(ResourceData data)
         {
@@ -88,7 +85,6 @@ namespace Player
 
         private void GenerateResourcesPanel(List<ResourceData> dataList)
         {
-            Debug.Log("Create resources");
             ClearResourcesPanel();
 
             foreach (var data in dataList)
@@ -103,7 +99,7 @@ namespace Player
         {
             foreach (Transform child in _resourcesParent)
             {
-                Destroy(child);
+                Destroy(child.gameObject);
             }
         }
     }
