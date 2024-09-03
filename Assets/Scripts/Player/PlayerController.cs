@@ -1,4 +1,5 @@
-﻿using Core;
+﻿using System;
+using Core;
 using Mirror;
 using UnityEngine;
 
@@ -11,6 +12,43 @@ namespace Player
         private EntityWeaponController _entityWeaponController;
         private Collider2D _collider;
         private Transform _graphics;
+
+        private void Start()
+        {
+            if (isServer)
+            {
+                return;
+            }
+
+            LoadResources(NetworkClient.localPlayer.connectionToClient);
+        }
+
+        [Command(requiresAuthority = false)]
+        private void LoadResources(NetworkConnectionToClient conn) =>
+            LoadResourceServer(conn);
+
+        [Server]
+        private void LoadResourceServer(NetworkConnectionToClient conn)
+        {
+            LoadResourceRpc(conn, 
+                _entityStats.IsEnable,
+                _entityMovementController.IsEnable,
+                _entityWeaponController.IsEnable,
+                _collider.enabled,
+                _graphics.gameObject.activeSelf);
+        }
+
+        [TargetRpc]
+        private void LoadResourceRpc(NetworkConnectionToClient target, bool entityStatsState,
+            bool entityMovementControllerState, bool entityWeaponControllerState, bool colliderState,
+            bool graphicsState)
+        {
+            _entityStats.IsEnable = entityStatsState;
+            _entityMovementController.IsEnable = entityMovementControllerState;
+            _entityWeaponController.IsEnable = entityWeaponControllerState;
+            _collider.enabled = colliderState;
+            _graphics.gameObject.SetActive(graphicsState);
+        }
 
         public override void Initialize(params object[] objects)
         {
@@ -55,7 +93,7 @@ namespace Player
             _graphics.gameObject.SetActive(false);
         }
 
-        public override void ChangePosition(Vector2 newPosition) => 
+        public override void ChangePosition(Vector2 newPosition) =>
             ChangePositionCmd(newPosition);
 
         [Command(requiresAuthority = false)]
