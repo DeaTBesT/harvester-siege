@@ -9,14 +9,14 @@ namespace Vehicle
 {
     public class InteractableVehicle : NetworkBehaviour, IInitialize, IInteractable
     {
-        private const int NUMBER_PLAYER_TAKE_SEAT = 1;
+        private const int NUMBER_PLAYER_TAKE_SEAT = 1; //Кол-во мест занимаемых одним игроков
         private const float PLAYER_COLLIDER_RADIUS = 0.5f;
-        
+
         [SerializeField] private int _seatsNumber = 1;
 
         [SerializeField] private Transform[] _exitPositions;
         [SerializeField] private LayerMask _preventingColliderLayer;
-        
+
         [SyncVar] private int _takeSeats;
 
         private readonly SyncList<NetworkIdentity> _takeSeatsObjects = new();
@@ -26,7 +26,7 @@ namespace Vehicle
         public int TakeSeats => _takeSeats;
 
         public bool OneTimeInteract => false;
-        
+
         public Action OnInteract { get; set; }
         public Action OnFinishInteract { get; set; }
 
@@ -66,7 +66,7 @@ namespace Vehicle
             return true;
         }
 
-        public void FinishInteract(IInteractor interactor) //TODO: перемещать персонажа рядом с транспортом
+        public void FinishInteract(IInteractor interactor)
         {
             var interactorNetId = interactor.InteractableNetId;
 
@@ -74,13 +74,13 @@ namespace Vehicle
             {
                 return;
             }
-            
+
             RemovePlayerSeat(interactorNetId);
 
             if (interactorNetId.TryGetComponent(out EntityController entityController))
             {
-                entityController.ActivateEntity();
                 entityController.ChangePosition(exitPosition);
+                entityController.ActivateEntity();
             }
 
             if (interactorNetId.TryGetComponent(out InputHandler inputHandlerExitPlayer))
@@ -92,12 +92,16 @@ namespace Vehicle
             {
                 cameraController.ChangeTarget(interactorNetId);
             }
-            
+
             OnFinishInteract?.Invoke();
         }
 
         [Command(requiresAuthority = false)]
-        private void AddPlayerSeat(NetworkIdentity interactorNetId)
+        private void AddPlayerSeat(NetworkIdentity interactorNetId) =>
+            AddPlayerSeatRpc(interactorNetId);
+
+        [ClientRpc]
+        private void AddPlayerSeatRpc(NetworkIdentity interactorNetId)
         {
             _takeSeats = Mathf.Clamp(_takeSeats + NUMBER_PLAYER_TAKE_SEAT, 0, _seatsNumber);
 
@@ -110,7 +114,11 @@ namespace Vehicle
         }
 
         [Command(requiresAuthority = false)]
-        private void RemovePlayerSeat(NetworkIdentity interactorNetId)
+        private void RemovePlayerSeat(NetworkIdentity interactorNetId) =>
+            RemovePlayerSeatRpc(interactorNetId);
+
+        [ClientRpc]
+        private void RemovePlayerSeatRpc(NetworkIdentity interactorNetId)
         {
             _takeSeats = Mathf.Clamp(_takeSeats - NUMBER_PLAYER_TAKE_SEAT, 0, _seatsNumber);
 
@@ -121,9 +129,9 @@ namespace Vehicle
 
             _inputHandler.SetEnableByNetId(interactorNetId, false);
 
-            if (_takeSeats > 0)
+            if (_takeSeatsObjects.Count > 0)
             {
-                _inputHandler.SetEnableByNetId(_takeSeatsObjects[0], _takeSeats == 1);
+                _inputHandler.SetEnableByNetId(_takeSeatsObjects[0], true);
             }
         }
 
@@ -139,10 +147,11 @@ namespace Vehicle
 #endif
                 return isCanExit;
             }
-            
+
             foreach (var exit in _exitPositions)
             {
-                Collider2D[] collider = Physics2D.OverlapCircleAll(exit.position, PLAYER_COLLIDER_RADIUS, _preventingColliderLayer);
+                Collider2D[] collider =
+                    Physics2D.OverlapCircleAll(exit.position, PLAYER_COLLIDER_RADIUS, _preventingColliderLayer);
 
                 if (collider.Length <= 0)
                 {
