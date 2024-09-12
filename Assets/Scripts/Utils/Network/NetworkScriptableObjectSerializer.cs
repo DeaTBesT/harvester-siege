@@ -2,7 +2,7 @@
 
 namespace Utils.Networking
 {
-    public static class NetworkSerializer
+    public static class NetworkScriptableObjectSerializer
     {
         public static string SerializeScriptableObject(ScriptableObject scriptableObject) =>
             scriptableObject.name; 
