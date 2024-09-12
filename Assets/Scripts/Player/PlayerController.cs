@@ -1,11 +1,12 @@
-﻿using System;
-using Core;
+﻿using Core;
+using Interfaces;
 using Mirror;
+using Player.CustomSerialization;
 using UnityEngine;
 
 namespace Player
 {
-    public class PlayerController : EntityController
+    public class PlayerController : EntityController, INetworkLoad
     {
         private EntityStats _entityStats;
         private EntityMovementController _entityMovementController;
@@ -20,34 +21,40 @@ namespace Player
                 return;
             }
 
-            LoadResources(NetworkClient.localPlayer.connectionToClient);
+            LoadDataCmd(NetworkClient.localPlayer.connectionToClient);
         }
 
         [Command(requiresAuthority = false)]
-        private void LoadResources(NetworkConnectionToClient conn) =>
-            LoadResourceServer(conn);
+        public void LoadDataCmd(NetworkConnectionToClient conn) =>
+            LoadDataServer(conn);
 
         [Server]
-        private void LoadResourceServer(NetworkConnectionToClient conn)
+        public void LoadDataServer(NetworkConnectionToClient conn)
         {
-            LoadResourceRpc(conn, 
-                _entityStats.IsEnable,
+            var data = new PlayerControllerData(_entityStats.IsEnable,
                 _entityMovementController.IsEnable,
                 _entityWeaponController.IsEnable,
                 _collider.enabled,
                 _graphics.gameObject.activeSelf);
+
+            var writer = new NetworkWriter();
+            writer.WritePlayerControllerData(data);
+            var writerData = writer.ToArray();
+            
+            LoadDataRpc(conn, writerData);
         }
 
         [TargetRpc]
-        private void LoadResourceRpc(NetworkConnectionToClient target, bool entityStatsState,
-            bool entityMovementControllerState, bool entityWeaponControllerState, bool colliderState,
-            bool graphicsState)
+        public void LoadDataRpc(NetworkConnectionToClient target, byte[] writerData)
         {
-            _entityStats.IsEnable = entityStatsState;
-            _entityMovementController.IsEnable = entityMovementControllerState;
-            _entityWeaponController.IsEnable = entityWeaponControllerState;
-            _collider.enabled = colliderState;
-            _graphics.gameObject.SetActive(graphicsState);
+            var reader = new NetworkReader(writerData);
+            var data = reader.ReadPlayerControllerData();
+
+            _entityStats.IsEnable = data.IsEnableEntityStats;
+            _entityMovementController.IsEnable = data.IsEnableEntityMovementController;
+            _entityWeaponController.IsEnable = data.IsEnableEntityWeaponController;
+            _collider.enabled = data.IsEnableCollider;
+            _graphics.gameObject.SetActive(data.IsEnableEntityStats);
         }
 
         public override void Initialize(params object[] objects)
