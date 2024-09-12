@@ -1,5 +1,6 @@
 ﻿using Core;
 using InputModule;
+using Mirror;
 using PlayerInputModule;
 using UnityEngine;
 
@@ -45,11 +46,10 @@ namespace Vehicle
             }
 
             var inputModule = new PlayerInput(_camera);
-            
+
             _inputHandler?.Initialize(inputModule);
-            _inputHandler?.SetEnableGlobal(false);
+            _inputHandler?.SetEnableLocal(false);
             _inputHandler?.SetIgnoreLocalPlayer(true);
-            
             _interactableVehicle?.Initialize(_inputHandler);
             _entityMovementController.Initialize(inputModule,
                 _rigidbody2d,

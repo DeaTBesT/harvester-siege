@@ -10,7 +10,7 @@ namespace InputModule
 
         private bool _isIgnoreLocalPlayer;
         
-        public bool IsEnable { get; set; } = true;
+        public bool IsEnable { get; set; }
 
         public void Initialize(params object[] objects) =>
             _input = objects[0] as IInput;

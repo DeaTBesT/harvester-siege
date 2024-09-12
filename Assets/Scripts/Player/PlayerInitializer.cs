@@ -106,6 +106,7 @@ namespace PlayerModule
             // ReSharper disable Unity.NoNullPropagation
             _entityStats?.Initialize();
             _inputHandler?.Initialize(inputModule);
+            _inputHandler?.SetEnableLocal(true);
             _inputHandler?.SetIgnoreLocalPlayer(false);
             _entityMovementController?.Initialize(inputModule,
                 _rigidbody2D);
