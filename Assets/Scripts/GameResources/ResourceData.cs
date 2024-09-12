@@ -11,7 +11,7 @@ namespace GameResources
 
         public GameResourceData gameResourceDataConfig => _gameResourceData;
         public int AmountResource => _amount;
-
+        
         public ResourceData(GameResourceData gameResourceData, int amount)
         {
             _gameResourceData = gameResourceData;
