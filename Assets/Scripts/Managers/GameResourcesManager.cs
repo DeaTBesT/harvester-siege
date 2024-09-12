@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using GameResources;
+using Interfaces;
+using Managers.CustomSerialization;
 using Mirror;
-using UnityEngine;
-using Utils;
+using Utils.Networking;
 
 namespace Managers
 {
-    public class GameResourcesManager : Singleton<GameResourcesManager>
+    public class GameResourcesManager : Singleton<GameResourcesManager>, INetworkLoad
     {
         private List<ResourceData> _resourcesData = new();
 
@@ -22,36 +23,57 @@ namespace Managers
             {
                 return;
             }
-            
-            LoadResources(NetworkClient.localPlayer.connectionToClient);
+
+            LoadDataCmd(NetworkClient.localPlayer.connectionToClient);
         }
 
         [Command(requiresAuthority = false)]
-        private void LoadResources(NetworkConnectionToClient conn) => 
-            LoadResourceServer(conn);
+        public void LoadDataCmd(NetworkConnectionToClient conn) =>
+            LoadDataServer(conn);
 
         [Server]
-        private void LoadResourceServer(NetworkConnectionToClient conn)
+        public void LoadDataServer(NetworkConnectionToClient conn)
         {
+            var resourceNameList = new List<string>();
+            var resourceAmountList = new List<int>();
+
             foreach (var resourceData in _resourcesData)
             {
-                LoadResourceRpc(conn,
-                    NetworkSerializer.SerializeScriptableObject(resourceData.gameResourceDataConfig),
-                    resourceData.AmountResource);
+                resourceNameList.Add(
+                    NetworkScriptableObjectSerializer.SerializeScriptableObject(resourceData.gameResourceDataConfig));
+                resourceAmountList.Add(resourceData.AmountResource);
             }
+
+            var data = new GameResourcesManagerData(resourceNameList, resourceAmountList);
+
+            var writer = new NetworkWriter();
+            writer.WriteGameResourcesManagerData(data);
+            var writerData = writer.ToArray();
+
+            LoadDataRpc(conn, writerData);
         }
 
         [TargetRpc]
-        private void LoadResourceRpc(NetworkConnectionToClient target, string gameResourceName, int amount)
+        public void LoadDataRpc(NetworkConnectionToClient target, byte[] writerData)
         {
-            var gameResource = (GameResourceData)NetworkSerializer.DeserializeScriptableObject(gameResourceName);
-            _resourcesData.Add(new ResourceData(gameResource, amount));
+            var reader = new NetworkReader(writerData);
+            var data = reader.ReadGameResourcesManagerData();
+
+            for (int i = 0; i < data.GameResourceNameList.Count; i++)
+            {
+                var resourceName = data.GameResourceNameList[i];
+                var resourceAmount = data.GameResourceAmountList[i];
+
+                var gameResource =
+                    (GameResourceData)NetworkScriptableObjectSerializer.DeserializeScriptableObject(resourceName);
+                _resourcesData.Add(new ResourceData(gameResource, resourceAmount));
+            }
+
             OnChangeResourcesData?.Invoke(_resourcesData);
-            Debug.Log("Load resource");
         }
 
         public void AddResource(GameResourceData gameResourceData, int amount = 1) =>
-            AddResourceCmd(NetworkSerializer.SerializeScriptableObject(gameResourceData), amount);
+            AddResourceCmd(NetworkScriptableObjectSerializer.SerializeScriptableObject(gameResourceData), amount);
 
         [Command(requiresAuthority = false)]
         private void AddResourceCmd(string gameResourceName, int amount) =>
@@ -60,7 +82,8 @@ namespace Managers
         [ClientRpc]
         private void AddResourceRpc(string gameResourceName, int amount)
         {
-            var gameResource = (GameResourceData)NetworkSerializer.DeserializeScriptableObject(gameResourceName);
+            var gameResource =
+                (GameResourceData)NetworkScriptableObjectSerializer.DeserializeScriptableObject(gameResourceName);
             var resourceData = _resourcesData.FirstOrDefault(x =>
                 x.gameResourceDataConfig.TypeGameResource == gameResource.TypeGameResource);
 
@@ -78,7 +101,7 @@ namespace Managers
 
         public void RemoveResource(GameResourceData gameResourceData, int amount = 1)
         {
-            RemoveResourceServer(NetworkSerializer.SerializeScriptableObject(gameResourceData), amount);
+            RemoveResourceServer(NetworkScriptableObjectSerializer.SerializeScriptableObject(gameResourceData), amount);
         }
 
         [Server]
