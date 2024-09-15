@@ -1,5 +1,6 @@
 ﻿using Core;
 using Interfaces;
+using Managers;
 using Mirror;
 using Player.CustomSerialization;
 using UnityEngine;
@@ -14,19 +15,11 @@ namespace Player
         private Collider2D _collider;
         private Transform _graphics;
 
-        private void Start()
-        {
-            if (isServer)
-            {
-                return;
-            }
+        public override void OnStartServer() =>
+            NetworkLoadManager.Instance.AddLoader(this);
 
-            LoadDataCmd(NetworkClient.localPlayer.connectionToClient);
-        }
-
-        [Command(requiresAuthority = false)]
-        public void LoadDataCmd(NetworkConnectionToClient conn) =>
-            LoadDataServer(conn);
+        public override void OnStopServer() =>
+            NetworkLoadManager.Instance.RemoveLoader(this);
 
         [Server]
         public void LoadDataServer(NetworkConnectionToClient conn)
@@ -40,7 +33,7 @@ namespace Player
             var writer = new NetworkWriter();
             writer.WritePlayerControllerData(data);
             var writerData = writer.ToArray();
-            
+
             LoadDataRpc(conn, writerData);
         }
 

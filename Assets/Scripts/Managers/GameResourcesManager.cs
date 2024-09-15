@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GameResources;
 using Interfaces;
 using Managers.CustomSerialization;
 using Mirror;
+using UnityEngine;
 using Utils.Networking;
 
 namespace Managers
@@ -17,19 +19,11 @@ namespace Managers
         public Action<ResourceData> OnRemoveResource { get; set; }
         public Action<List<ResourceData>> OnChangeResourcesData { get; set; }
 
-        private void Start()
-        {
-            if (isServer)
-            {
-                return;
-            }
+        public override void OnStartServer() => 
+            NetworkLoadManager.Instance.AddLoader(this);
 
-            LoadDataCmd(NetworkClient.localPlayer.connectionToClient);
-        }
-
-        [Command(requiresAuthority = false)]
-        public void LoadDataCmd(NetworkConnectionToClient conn) =>
-            LoadDataServer(conn);
+        public override void OnStopServer() => 
+            NetworkLoadManager.Instance.RemoveLoader(this);
 
         [Server]
         public void LoadDataServer(NetworkConnectionToClient conn)
