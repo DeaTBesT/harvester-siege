@@ -123,12 +123,16 @@ namespace PlayerModule
 
             _entityInventoryController.Initialize(gameResourcesManager);
             _playerUIController?.Initialize(gameResourcesManager);
+
+            IsInitialized = true;
         }
 
         protected override void Deinitialize()
         {
             _entityMovementController?.Deinitialize();
             _entityWeaponController?.Deinitialize();
+            
+            IsInitialized = false;
         }
     }
 }

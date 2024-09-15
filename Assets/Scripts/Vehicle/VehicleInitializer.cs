@@ -54,9 +54,15 @@ namespace Vehicle
             _entityMovementController.Initialize(inputModule,
                 _rigidbody2d,
                 _interactableVehicle);
+
+            IsInitialized = true;
         }
 
-        protected override void Deinitialize() =>
+        protected override void Deinitialize()
+        {
             _entityMovementController.Deinitialize();
+            
+            IsInitialized = false;
+        }
     }
 }
