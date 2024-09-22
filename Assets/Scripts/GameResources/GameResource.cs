@@ -34,6 +34,11 @@ namespace GameResources
             throw new NotImplementedException();
         }
 
+        public void ForceFinishInteract(IInteractor interactor)
+        {
+            throw new NotImplementedException();
+        }
+
         [Command(requiresAuthority = false)]
         private void DestroySelfCmd() =>
             NetworkServer.Destroy(gameObject);

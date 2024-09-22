@@ -96,6 +96,15 @@ namespace Vehicle
             OnFinishInteract?.Invoke();
         }
 
+        public void ForceFinishInteract(IInteractor interactor)
+        {
+            var interactorNetId = interactor.InteractableNetId;
+            
+            RemovePlayerSeat(interactorNetId);
+            
+            OnFinishInteract?.Invoke();
+        }
+
         [Command(requiresAuthority = false)]
         private void AddPlayerSeat(NetworkIdentity interactorNetId) =>
             AddPlayerSeatRpc(interactorNetId);

@@ -12,5 +12,7 @@ namespace Interfaces
         bool TryInteract(IInteractor interactor);
 
         void FinishInteract(IInteractor interactor);
+
+        void ForceFinishInteract(IInteractor interactor);
     }
 }
