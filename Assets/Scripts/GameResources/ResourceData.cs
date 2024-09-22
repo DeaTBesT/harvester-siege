@@ -30,6 +30,19 @@ namespace GameResources
             _amount += amount;
 
         public void RemoveResource(int amount) => 
-            _amount -= amount;
+            RemoveResourceCmd(amount);
+        
+        [Command]
+        private void RemoveResourceCmd(int amount) => 
+            RemoveResourceRpc(amount);
+
+        [ClientRpc]
+        private void RemoveResourceRpc(int amount) => 
+            _amount = Mathf.Clamp(_amount - amount, 0, int.MaxValue);
+
+        public static void InstantiateResource(ResourceData resourceData, Vector3 spawnPosition = default, Quaternion spawnRotation = default)
+        {
+            //TODO: спавн ресурсов
+        }
     }
 }

@@ -18,7 +18,12 @@ namespace Core
             
         }
         
-        public virtual void RemoveResource(ResourceData resourceData)
+        public virtual void DropResource(ResourceData resourceData)
+        {
+            
+        }
+
+        public virtual void DropAllResources()
         {
             
         }
