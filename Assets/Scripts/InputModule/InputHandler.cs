@@ -40,6 +40,11 @@ namespace InputModule
 
         private void Update()
         {
+            if (_input == null)
+            {
+                return;
+            }
+            
             if (!isLocalPlayer)
             {
                 return;
@@ -50,6 +55,11 @@ namespace InputModule
 
         private void FixedUpdate()
         {
+            if (_input == null)
+            {
+                return;
+            }
+            
             if ((!isLocalPlayer) && (!_isIgnoreLocalPlayer))
             {
                 return;
