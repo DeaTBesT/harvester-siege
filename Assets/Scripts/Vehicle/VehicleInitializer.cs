@@ -38,7 +38,7 @@ namespace Vehicle
             }
         }
 
-        protected override void Initialize()
+        public override void Initialize()
         {
             if (_camera == null)
             {
@@ -58,7 +58,7 @@ namespace Vehicle
             IsInitialized = true;
         }
 
-        protected override void Deinitialize()
+        public override void Deinitialize()
         {
             _entityMovementController.Deinitialize();
             

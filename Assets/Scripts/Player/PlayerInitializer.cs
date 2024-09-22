@@ -1,5 +1,7 @@
-﻿using Core;
+﻿using System;
+using Core;
 using InputModule;
+using Interfaces;
 using Managers;
 using Mirror;
 using Player;
@@ -55,7 +57,7 @@ namespace PlayerModule
             if (_entityInteractionController == null)
             {
                 _entityInteractionController = GetComponent<EntityInteractionController>();
-            } 
+            }
             
             if (_entityInventoryController == null)
             {
@@ -88,7 +90,7 @@ namespace PlayerModule
             }
         }
 
-        protected override void Initialize()
+        public override void Initialize()
         {
             if (_camera == null)
             {
@@ -126,12 +128,13 @@ namespace PlayerModule
 
             IsInitialized = true;
         }
-
-        protected override void Deinitialize()
+        
+        public override void Deinitialize()
         {
             _entityMovementController?.Deinitialize();
             _entityWeaponController?.Deinitialize();
-            
+            _entityInteractionController?.Deinitialize();
+
             IsInitialized = false;
         }
     }
