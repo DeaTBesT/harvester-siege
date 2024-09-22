@@ -19,5 +19,16 @@ namespace Player
             _gameResourcesManager.AddResource(resourceData.gameResourceDataConfig, resourceData.AmountResource);
             _resourcesData.Add(resourceData);
         }
+
+        public override void DropResource(ResourceData resourceData) => 
+            ResourceData.InstantiateResource(resourceData, transform.position);
+
+        public override void DropAllResources()
+        {
+            foreach (var resourceData in _resourcesData)
+            {
+                DropResource(resourceData);
+            }
+        }
     }
 }
