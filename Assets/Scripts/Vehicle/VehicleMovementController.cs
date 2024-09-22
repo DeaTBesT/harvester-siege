@@ -20,7 +20,7 @@ namespace Vehicle
         [SyncVar] private float _steeringInput = 0;
 
         private float _rotationAngle = 0;
-        private float _velocityUp;
+        [SyncVar] private float _velocityUp;
 
         private InteractableVehicle _interactableVehicle;
 
@@ -102,6 +102,7 @@ namespace Vehicle
                 return;
             }
 
+            
             _rigidbody2d.drag = _accelerationInput == 0
                 ? Mathf.Lerp(_rigidbody2d.drag, RIGIDBODY_DRAG_IDLE, Time.fixedDeltaTime * 3f)
                 : RIGIDBODY_DRAG_DRIVE;
