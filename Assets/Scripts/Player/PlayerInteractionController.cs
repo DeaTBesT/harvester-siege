@@ -1,6 +1,5 @@
 ﻿using Core;
 using Interfaces;
-using Mirror;
 using UnityEngine;
 
 namespace Player
@@ -32,6 +31,11 @@ namespace Player
             if (_inputModule != null)
             {
                 _inputModule.OnMousePosition -= OnMousePosition;
+            }
+
+            if (_currentInteractable != null)
+            {
+                _currentInteractable?.ForceFinishInteract(this);
             }
         }
 
