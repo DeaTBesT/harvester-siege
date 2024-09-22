@@ -1,6 +1,5 @@
 ﻿using Core;
 using Mirror;
-using UnityEngine;
 
 namespace Player
 {
@@ -15,13 +14,24 @@ namespace Player
                 return;
             }
             
-            TakeDamageRpc(amount);
+            TakeDamageCmd(amount);
+        }
+
+        [Command]
+        private void TakeDamageCmd(float amount)
+        {
+            
         }
 
         [ClientRpc]
         private void TakeDamageRpc(float amount)
         {
-            Debug.Log($"Take damage: {amount}");
+            
+        }
+        
+        public override void DestroyEntity()
+        {
+            
         }
     }
 }

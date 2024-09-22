@@ -17,5 +17,11 @@ namespace Core
         }
         
         public abstract void TakeDamage(int teamId, float amount);
+
+        //Уничтожение сущности
+        public virtual void DestroyEntity()
+        {
+            
+        }
     }
 }
