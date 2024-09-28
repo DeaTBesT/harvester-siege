@@ -231,6 +231,7 @@ MonoBehaviour:
   spawnPrefabs:
   - {fileID: 6038837581636154012, guid: e1903c91e83374942b5234be51bc17c2, type: 3}
   - {fileID: 2506372898403493757, guid: 5f6563213ce28454db7b4e5c738cf598, type: 3}
+  - {fileID: 5573049702635950614, guid: 2ab64a0a77f76f84181018c25a093912, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2
@@ -246,7 +247,6 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 3
   timeInterpolationGui: 0
-  _dummyPlayer: {fileID: 2500378800180718737, guid: dab90afa526616b4a8e31f82126373d4, type: 3}
 --- !u!4 &527577099
 Transform:
   m_ObjectHideFlags: 0
