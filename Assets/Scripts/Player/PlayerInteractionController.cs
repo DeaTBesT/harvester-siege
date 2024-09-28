@@ -1,5 +1,6 @@
 ﻿using Core;
 using Interfaces;
+using Mirror;
 using UnityEngine;
 
 namespace Player
@@ -12,7 +13,7 @@ namespace Player
 
         private Vector2 _mousePosition;
 
-        private IInteractable _currentInteractable;
+        [SyncVar] private NetworkIdentity _currentInteractable;
 
         public override void Initialize(params object[] objects)
         {
@@ -35,7 +36,11 @@ namespace Player
 
             if (_currentInteractable != null)
             {
-                _currentInteractable?.ForceFinishInteract(this);
+                if (_currentInteractable.TryGetComponent(out IInteractable interactable))
+                {
+                    interactable?.ForceFinishInteract(this);
+                    ChangeInteractionEvents();
+                }
             }
         }
 
@@ -62,17 +67,24 @@ namespace Player
                 {
                     if (!interactable.OneTimeInteract)
                     {
-                        _currentInteractable = interactable;
+                        SetCurrentInteractable(interactable.NetIdentity);
                         ChangeInteractionEvents();
                     }
                 }
             }
         }
 
+        [Command]
+        private void SetCurrentInteractable(NetworkIdentity netIdentity) => 
+            _currentInteractable = netIdentity;
+
         public override void OnEndInteract()
         {
-            _currentInteractable?.FinishInteract(this);
-            ChangeInteractionEvents();
+            if (_currentInteractable.TryGetComponent(out IInteractable interactable))
+            {
+                interactable?.FinishInteract(this);
+                ChangeInteractionEvents();
+            }
         }
     }
 }
