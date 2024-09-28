@@ -8,8 +8,6 @@ namespace Managers
 {
     public class CustomNetworkManager : NetworkManager
     {
-        [SerializeField] private NetworkIdentity _dummyPlayer;
-
         // public override void OnServerConnect(NetworkConnectionToClient conn)
         // {
         //     base.OnServerConnect(conn);
@@ -23,9 +21,9 @@ namespace Managers
         // private IEnumerator ConnectingHandler(NetworkConnectionToClient conn)
         // {
         //     GameObject player = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
+        //     player.name = $"{playerPrefab.name} [connId={conn.connectionId}]";
         //     NetworkServer.AddPlayerForConnection(conn, player);
-        //     NetworkServer.Spawn(player);
-        //
+        //     
         //     Debug.Log($"New player {conn.connectionId} connecting...");
         //
         //     while (conn.identity == null)
@@ -39,15 +37,16 @@ namespace Managers
         //     }
         //
         //     initializer.Initialize();
-        //     //
+        //     
         //     while (!initializer.IsInitialized)
         //     {
         //         yield return null;
         //     }
         //
-        //     //
+        //     //NetworkServer.Spawn(player);
+        //     
         //     Debug.Log($"{conn.identity.name} is initialized");
-        //     //
+        //
         //     // NetworkServer.DestroyPlayerForConnection(conn);
         // }
 
@@ -59,19 +58,18 @@ namespace Managers
             var serverConn = NetworkServer.connections.ToDictionary(x =>
                 x.Value.identity.isServer).First().Value.Value;
 
-            //var dummyPlayer = Instantiate(_dummyPlayer, Vector3.zero, Quaternion.identity);
-            // NetworkServer.Spawn(dummyPlayer.gameObject, conn);
-            // NetworkServer.AddPlayerForConnection(conn, dummyPlayer.gameObject);
-
             Debug.Log($"{conn.identity.name} disconnecting...");
 
             var identity = conn.identity;
 
-            //dummyPlayer.AssignClientAuthority(conn);
+            NetworkServer.RemovePlayerForConnection(conn);
+            identity.AssignClientAuthority(serverConn);
 
-            //conn.Disconnect();
-            
-            NetworkServer.RemovePlayerForConnection(conn, RemovePlayerOptions.Unspawn);
+            while (!identity.isOwned)
+            {
+                Debug.LogWarning("Wait owned object");
+                yield return null;
+            }
 
             if (!identity.TryGetComponent(out EntityInitializer initializer))
             {
@@ -87,7 +85,7 @@ namespace Managers
 
             Debug.Log($"Player is deinitialized");
 
-            //NetworkServer.DestroyPlayerForConnection(conn);
+            NetworkServer.Destroy(identity.gameObject);
         }
     }
 }
