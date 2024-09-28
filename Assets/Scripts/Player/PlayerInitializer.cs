@@ -1,7 +1,5 @@
-﻿using System;
-using Core;
+﻿using Core;
 using InputModule;
-using Interfaces;
 using Managers;
 using Mirror;
 using Player;
@@ -15,7 +13,7 @@ namespace PlayerModule
     {
         [Header("Advanced components")] [SerializeField]
         private EntityStats _entityStats;
-
+        
         [SerializeField] private EntityController _entityController;
         [SerializeField] private EntityMovementController _entityMovementController;
         [SerializeField] private EntityWeaponController _entityWeaponController;
@@ -38,22 +36,22 @@ namespace PlayerModule
             {
                 _entityStats = GetComponent<EntityStats>();
             }
-
+            
             if (_entityController == null)
             {
                 _entityController = GetComponent<EntityController>();
             }
-
+            
             if (_entityMovementController == null)
             {
                 _entityMovementController = GetComponent<EntityMovementController>();
             }
-
+            
             if (_entityWeaponController == null)
             {
                 _entityWeaponController = GetComponent<EntityWeaponController>();
             }
-
+            
             if (_entityInteractionController == null)
             {
                 _entityInteractionController = GetComponent<EntityInteractionController>();
@@ -63,33 +61,33 @@ namespace PlayerModule
             {
                 _entityInventoryController = GetComponent<EntityInventoryController>();
             }
-
+            
             if (_playerUIController == null)
             {
                 _playerUIController = GetComponent<PlayerUIController>();
             }
-
+            
             if (_inputHandler == null)
             {
                 _inputHandler = GetComponent<InputHandler>();
             }
-
+            
             if (_cameraController == null)
             {
                 _cameraController = GetComponent<CameraController>();
             }
-
+            
             if (_rigidbody2D == null)
             {
                 _rigidbody2D = GetComponent<Rigidbody2D>();
             }
-
+            
             if (_collider == null)
             {
                 _collider = GetComponent<Collider2D>();
             }
         }
-
+ 
         public override void Initialize()
         {
             if (_camera == null)
@@ -115,7 +113,7 @@ namespace PlayerModule
             _cameraController?.Initialize(_camera,
                 transform);
             _entityWeaponController?.Initialize(inputModule,
-                _entityStats);
+                _entityStats, _entityObjectContainer);
             _entityInteractionController?.Initialize(inputModule);
             _entityController.Initialize(_entityStats,
                 _entityMovementController,
@@ -123,7 +121,7 @@ namespace PlayerModule
                 _collider,
                 _graphics);
 
-            _entityInventoryController.Initialize(gameResourcesManager);
+            _entityInventoryController?.Initialize(gameResourcesManager);
             _playerUIController?.Initialize(gameResourcesManager);
 
             IsInitialized = true;
@@ -131,6 +129,8 @@ namespace PlayerModule
         
         public override void Deinitialize()
         {
+            base.Deinitialize();
+            
             _entityMovementController?.Deinitialize();
             _entityWeaponController?.Deinitialize();
             _entityInteractionController?.Deinitialize();
