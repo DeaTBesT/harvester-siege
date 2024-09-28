@@ -11,6 +11,7 @@ namespace GameResources
         [SerializeField] private ResourceData _resourceData;
 
         public bool OneTimeInteract => true;
+        public NetworkIdentity NetIdentity => netIdentity;
 
         public Action OnInteract { get; set; }
         public Action OnFinishInteract { get; set; }
