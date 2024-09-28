@@ -456,6 +456,9 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  _selfInitialize: 1
+  _selfDeinitialize: 1
+  _entityObjectContainerPrefab: {fileID: 5573049702635950614, guid: 2ab64a0a77f76f84181018c25a093912, type: 3}
   _entityMovementController: {fileID: 5566210288381571852}
   _interactableVehicle: {fileID: 6788960387336354383}
   _inputHandler: {fileID: 5491138685995343138}
