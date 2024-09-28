@@ -22,7 +22,9 @@ namespace WeaponSystem.Projectile
         {
             base.Initialize(objects);
 
-            _bulletsPool = new GameObjectPool(_bulletPrefab, BULLETS_PRELOAD_COUNT);
+            var entityObjectContainer = objects[1] as Transform;
+            
+            _bulletsPool = new GameObjectPool(_bulletPrefab, BULLETS_PRELOAD_COUNT, entityObjectContainer);
             _projectileConfig = (ProjectileWeaponConfig)_weaponConfig;
         }
 
