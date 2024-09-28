@@ -4,15 +4,14 @@ namespace Utils.ObjectPool
 {
     public class GameObjectPool : PoolBase<GameObject>
     {
-        public GameObjectPool(GameObject prefab, int preloadCount)
-            : base(() => Preload(prefab), GetAction, ReturnAction, preloadCount)
+        public GameObjectPool(GameObject prefab, int preloadCount, Transform entityObjectContainer)
+            : base(() => Preload(prefab, entityObjectContainer), GetAction, ReturnAction, preloadCount)
         {
         }
 
-        //TODO: создавать в пустышке весь пул объектов
-        private static GameObject Preload(GameObject prefab)
+        private static GameObject Preload(GameObject prefab, Transform parent)
         {
-            GameObject @object = Object.Instantiate(prefab);
+            var @object = Object.Instantiate(prefab, parent);
             return @object;
         }
 
