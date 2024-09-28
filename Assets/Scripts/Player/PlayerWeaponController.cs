@@ -13,11 +13,14 @@ namespace Player
         
         public override void Initialize(params object[] objects)
         {
-            base.Initialize(objects[1] as EntityStats);
+            var entityStats = objects[1] as EntityStats;
+            var entityObjectContainer = objects[2] as Transform;
+
+            base.Initialize(entityStats, entityObjectContainer);
             
             EquipWeapon(_startWeapon);
             _inputModule = objects[0] as IInput;
-
+            
             if (_inputModule == null)
             {
 #if UNITY_EDITOR
@@ -41,7 +44,7 @@ namespace Player
             
             _inputModule.OnAttack -= UseWeapon;
 
-            foreach (Weapon weapon in _weaponsContainer)
+            foreach (var weapon in _weaponsContainer)
             {
                 weapon.Deinitialize();
             }
