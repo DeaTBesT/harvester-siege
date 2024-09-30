@@ -418,7 +418,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  _selfInitialize: 1
+  _selfInitialize: 0
   _selfDeinitialize: 0
   _entityObjectContainerPrefab: {fileID: 5573049702635950614, guid: 2ab64a0a77f76f84181018c25a093912, type: 3}
   _entityStats: {fileID: 6068492325486197194}

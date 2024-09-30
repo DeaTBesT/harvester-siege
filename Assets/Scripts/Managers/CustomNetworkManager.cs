@@ -2,54 +2,72 @@
 using System.Linq;
 using Core;
 using Mirror;
+using PlayerModule;
 using UnityEngine;
 
 namespace Managers
 {
     public class CustomNetworkManager : NetworkManager
     {
-        // public override void OnServerConnect(NetworkConnectionToClient conn)
-        // {
-        //     base.OnServerConnect(conn);
-        // }
-        //
-        // public override void OnServerAddPlayer(NetworkConnectionToClient conn)
-        // {
-        //     StartCoroutine(ConnectingHandler(conn));
-        // }
-        //
-        // private IEnumerator ConnectingHandler(NetworkConnectionToClient conn)
-        // {
-        //     GameObject player = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
-        //     player.name = $"{playerPrefab.name} [connId={conn.connectionId}]";
-        //     NetworkServer.AddPlayerForConnection(conn, player);
-        //     
-        //     Debug.Log($"New player {conn.connectionId} connecting...");
-        //
-        //     while (conn.identity == null)
-        //     {
-        //         yield return null;
-        //     }
-        //
-        //     if (!player.TryGetComponent(out EntityInitializer initializer))
-        //     {
-        //         Debug.LogError($"Entity initializer is null: {conn.connectionId}");
-        //     }
-        //
-        //     initializer.Initialize();
-        //     
-        //     while (!initializer.IsInitialized)
-        //     {
-        //         yield return null;
-        //     }
-        //
-        //     //NetworkServer.Spawn(player);
-        //     
-        //     Debug.Log($"{conn.identity.name} is initialized");
-        //
-        //     // NetworkServer.DestroyPlayerForConnection(conn);
-        // }
+        public override void OnServerAddPlayer(NetworkConnectionToClient conn) => 
+            StartCoroutine(ConnectingHandler(conn));
 
+        private IEnumerator ConnectingHandler(NetworkConnectionToClient conn)
+        {
+            var player = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity);
+            player.name = $"{playerPrefab.name} [connId={conn.connectionId}]";
+            NetworkServer.AddPlayerForConnection(conn, player);
+            
+            Debug.Log($"New player {conn.connectionId} connecting...");
+        
+            yield return new WaitUntil(() => conn.identity != null);
+
+            if (!player.TryGetComponent(out PlayerInitializer initializer))
+            {
+                Debug.LogError($"Entity initializer is null: {conn.connectionId}");
+            }
+            
+            InitializeOtherPlayers(conn, out var isInitializedOtherPlayers);
+
+            yield return new WaitUntil(() => isInitializedOtherPlayers);
+            
+            initializer.InitializeRpc();
+            
+            yield return new WaitUntil(() => initializer.IsInitialized);
+        
+            Debug.Log($"{conn.identity.name} is initialized");
+        }
+        
+        private void InitializeOtherPlayers(NetworkConnectionToClient conn, out bool isInitialized)
+        {
+            foreach (var player in NetworkServer.connections.Where(x => x.Value != conn))
+            {
+                var playerIdentity = player.Value.identity;
+                
+                if (playerIdentity == null)
+                {
+                    Debug.LogError("Identity is null");
+                    continue;
+                }
+
+                if (!playerIdentity.TryGetComponent(out PlayerInitializer initializer))
+                {
+                    Debug.LogError("Initializer is null");
+                    continue;
+                }
+                //
+                // if (initializer.IsInitialized)
+                // {
+                //     Debug.LogError($"Player {playerIdentity.name} is initialized");
+                //     continue;
+                // }
+                
+                initializer.InitializeRpc();
+            }
+
+            isInitialized = true;
+        }
+        
         public override void OnServerDisconnect(NetworkConnectionToClient conn) =>
             StartCoroutine(DisconnectingHandler(conn));
 
@@ -65,11 +83,7 @@ namespace Managers
             NetworkServer.RemovePlayerForConnection(conn);
             identity.AssignClientAuthority(serverConn);
 
-            while (!identity.isOwned)
-            {
-                Debug.LogWarning("Wait owned object");
-                yield return null;
-            }
+            yield return new WaitUntil(() => identity.isOwned);
 
             if (!identity.TryGetComponent(out EntityInitializer initializer))
             {
@@ -78,10 +92,7 @@ namespace Managers
 
             initializer.Deinitialize();
 
-            while (initializer.IsInitialized)
-            {
-                yield return null;
-            }
+            yield return new WaitUntil(() => !initializer.IsInitialized);
 
             Debug.Log($"Player is deinitialized");
 
