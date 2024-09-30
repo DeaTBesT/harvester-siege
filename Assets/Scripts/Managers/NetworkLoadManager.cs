@@ -23,10 +23,7 @@ namespace Managers
 
         private IEnumerator LoadRoutine(NetworkConnectionToClient conn)
         {
-            while (conn.identity == null)
-            {
-                yield return null;
-            }
+            yield return new WaitUntil(() => conn.identity != null);
 
             Debug.Log($"{conn.identity.name} is exist");
             
@@ -35,11 +32,8 @@ namespace Managers
                 Debug.LogError($"Entity initializer is null: {conn.connectionId}");
             }
 
-            while (!initializer.IsInitialized)
-            {
-                yield return null;
-            }
-
+            yield return new WaitUntil(() => initializer.IsInitialized);
+          
             Debug.Log($"{conn.identity.name} is initialized");
             
             if (!conn.identity.isLocalPlayer)
