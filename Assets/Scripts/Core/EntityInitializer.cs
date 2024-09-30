@@ -17,8 +17,6 @@ namespace Core
 
         public override void OnStartClient()
         {
-            CreateEntityObjectContainer();
-            
             if (!_selfInitialize)
             {
                 return;
@@ -47,13 +45,7 @@ namespace Core
             }
         }
 
-        private void CreateEntityObjectContainer()
-        {
-            CreateEntityObjectContainerCmd();
-        }
-        
-        [Command]
-        private void CreateEntityObjectContainerCmd() => 
+        private void CreateEntityObjectContainer() => 
             StartCoroutine(CreateEntityObjectContainerHandler());
 
         private IEnumerator CreateEntityObjectContainerHandler()
