@@ -90,6 +90,11 @@ namespace PlayerModule
  
         public override void Initialize()
         {
+            if (IsInitialized)
+            {
+                return;
+            }
+            
             if (_camera == null)
             {
                 _camera = Camera.main;
@@ -126,7 +131,12 @@ namespace PlayerModule
 
             IsInitialized = true;
         }
-        
+
+        [ClientRpc]
+        public void InitializeRpc() => 
+            Initialize();
+
+
         public override void Deinitialize()
         {
             base.Deinitialize();
