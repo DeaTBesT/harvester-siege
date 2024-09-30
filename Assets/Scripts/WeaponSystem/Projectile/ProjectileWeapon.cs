@@ -24,9 +24,17 @@ namespace WeaponSystem.Projectile
 
             var entityObjectContainer = objects[1] as Transform;
             
+            NetworkClient.RegisterPrefab(_bulletPrefab, SpawnHandler, UnSpawnHandler);//TODO: Сделать отписку
+            
             _bulletsPool = new GameObjectPool(_bulletPrefab, BULLETS_PRELOAD_COUNT, entityObjectContainer);
             _projectileConfig = (ProjectileWeaponConfig)_weaponConfig;
         }
+
+        private GameObject SpawnHandler(SpawnMessage msg) => 
+            _bulletsPool.Get();
+
+        private void UnSpawnHandler(GameObject spawned) => 
+            _bulletsPool.Return(spawned);
 
         [Command]
         public override void UseWeapon()
