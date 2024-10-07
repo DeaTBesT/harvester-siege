@@ -31,10 +31,10 @@ namespace Managers
             {
                 Debug.LogError($"Entity initializer is null: {conn.connectionId}");
             }
-
+            
             yield return new WaitUntil(() => initializer.IsInitialized);
-          
-            Debug.Log($"{conn.identity.name} is initialized");
+            
+            Debug.Log($"{conn.identity.name} is initilaized. Check local player");
             
             if (!conn.identity.isLocalPlayer)
             {
