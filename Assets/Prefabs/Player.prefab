@@ -946,7 +946,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   _weaponConfig: {fileID: 11400000, guid: 90afc9ead468357418bf3568221dbf47, type: 2}
-  _bulletPrefab: {fileID: 6038837581636154012, guid: e1903c91e83374942b5234be51bc17c2, type: 3}
+  _bulletPrefab: {fileID: -1705074592762720571, guid: e1903c91e83374942b5234be51bc17c2, type: 3}
   _spawnPivot: {fileID: 7783442445394460015}
 --- !u!1 &5308626998931659018
 GameObject:
