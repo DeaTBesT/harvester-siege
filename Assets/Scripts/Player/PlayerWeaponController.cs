@@ -14,9 +14,8 @@ namespace Player
         public override void Initialize(params object[] objects)
         {
             var entityStats = objects[1] as EntityStats;
-            var entityObjectContainer = objects[2] as Transform;
 
-            base.Initialize(entityStats, entityObjectContainer);
+            base.Initialize(entityStats);
             
             EquipWeapon(_startWeapon);
             _inputModule = objects[0] as IInput;

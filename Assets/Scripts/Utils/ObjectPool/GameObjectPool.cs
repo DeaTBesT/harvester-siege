@@ -12,6 +12,7 @@ namespace Utils.ObjectPool
         private static GameObject Preload(GameObject prefab, Transform parent)
         {
             var @object = Object.Instantiate(prefab, parent);
+            
             return @object;
         }
 
