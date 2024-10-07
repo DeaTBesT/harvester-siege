@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using Mirror;
+﻿using Mirror;
 using UnityEngine;
 
 namespace Core
@@ -8,10 +7,6 @@ namespace Core
     {
         [SerializeField] private bool _selfInitialize = true;
         [SerializeField] private bool _selfDeinitialize = true;
-
-        [SerializeField] private GameObject _entityObjectContainerPrefab;
-        
-        protected Transform _entityObjectContainer;
         
         public bool IsInitialized { get; protected set; }
 
@@ -39,26 +34,7 @@ namespace Core
 
         public virtual void Deinitialize()
         {
-            if (_entityObjectContainer != null)
-            {
-                NetworkServer.Destroy(_entityObjectContainer.gameObject);
-            }
+          
         }
-
-        private void CreateEntityObjectContainer() => 
-            StartCoroutine(CreateEntityObjectContainerHandler());
-
-        private IEnumerator CreateEntityObjectContainerHandler()
-        {
-            while (isOwned)
-            {
-                yield return null;
-            }
-            
-            _entityObjectContainer = Instantiate(_entityObjectContainerPrefab, Vector3.zero, Quaternion.identity).transform;
-            _entityObjectContainer.name = gameObject.name + " object container";
-            
-            NetworkServer.Spawn(_entityObjectContainer.gameObject, connectionToClient);
-        } 
     }
 }
