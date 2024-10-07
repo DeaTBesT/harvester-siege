@@ -1,43 +1,26 @@
 ﻿using System;
+using Managers;
 using Mirror;
 using UnityEngine;
-using Utils.ObjectPool;
 using WeaponSystem.Core;
 
 namespace WeaponSystem.Projectile
 {
     public class ProjectileWeapon : Weapon
     {
-        private const int BULLETS_PRELOAD_COUNT = 10;
-
-        [SerializeField] private GameObject _bulletPrefab;
+        [SerializeField] private NetworkIdentity _bulletPrefab;
         [SerializeField] private Transform _spawnPivot;
 
-        private GameObjectPool _bulletsPool;
+        private PrefabPool _prefabPool;
         private ProjectileWeaponConfig _projectileConfig;
-
-        private static bool _isPrefabRegistered;
 
         public override void Initialize(params object[] objects)
         {
             base.Initialize(objects);
 
-            var entityObjectContainer = objects[1] as Transform;
-
-            if (isLocalPlayer)
-            {
-                NetworkClient.RegisterPrefab(_bulletPrefab, SpawnHandler, UnSpawnHandler); //TODO: Сделать отписку
-            }
-
-            _bulletsPool = new GameObjectPool(_bulletPrefab, BULLETS_PRELOAD_COUNT, entityObjectContainer);
             _projectileConfig = (ProjectileWeaponConfig)_weaponConfig;
+            _prefabPool = PrefabPoolManager.Instance.GetPool(_projectileConfig.TypePool);
         }
-        
-        private GameObject SpawnHandler(SpawnMessage msg) => 
-            _bulletsPool.Get();
-
-        private void UnSpawnHandler(GameObject spawned) => 
-            _bulletsPool.Return(spawned);
 
         [Command]
         public override void UseWeapon()
@@ -49,7 +32,7 @@ namespace WeaponSystem.Projectile
 
             _nextAttackTime = Time.time + 1f / _weaponConfig.FireRate;
 
-            var bulletObject = _bulletsPool.Get();
+            var bulletObject = _prefabPool.Get();
             bulletObject.transform.position = _spawnPivot.position;
             bulletObject.transform.rotation = _spawnPivot.rotation;
             NetworkServer.Spawn(bulletObject.gameObject);
@@ -59,7 +42,7 @@ namespace WeaponSystem.Projectile
                 Action onReachTarget = () =>
                 {
                     NetworkServer.UnSpawn(bulletObject.gameObject);
-                    _bulletsPool.Return(bulletObject.gameObject);
+                    _prefabPool.Return(bulletObject.gameObject);
                 };
 
                 bullet.Initialize(_entityStats.TeamId, _projectileConfig.Damage, _projectileConfig.BulletSpeed,

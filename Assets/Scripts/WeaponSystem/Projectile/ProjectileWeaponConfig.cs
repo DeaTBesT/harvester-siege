@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Enums;
+using UnityEngine;
 using WeaponSystem.Core;
 
 namespace WeaponSystem.Projectile
@@ -7,9 +8,11 @@ namespace WeaponSystem.Projectile
     public class ProjectileWeaponConfig : WeaponConfig
     {
         [SerializeField] private float _bulletSpeed;
-        [SerializeField] private int _destroyTime = 5000;
+        [SerializeField] private int _destroyTime = 5000;//В секундах
+        [SerializeField] private PoolType _poolType;//Из какого пула брать объекты
         
         public float BulletSpeed => _bulletSpeed;
         public int DestroyTime => _destroyTime;
+        public PoolType TypePool => _poolType;
     }
 }
