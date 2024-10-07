@@ -13,7 +13,7 @@ namespace PlayerModule
     {
         [Header("Advanced components")] [SerializeField]
         private EntityStats _entityStats;
-        
+
         [SerializeField] private EntityController _entityController;
         [SerializeField] private EntityMovementController _entityMovementController;
         [SerializeField] private EntityWeaponController _entityWeaponController;
@@ -36,74 +36,69 @@ namespace PlayerModule
             {
                 _entityStats = GetComponent<EntityStats>();
             }
-            
+
             if (_entityController == null)
             {
                 _entityController = GetComponent<EntityController>();
             }
-            
+
             if (_entityMovementController == null)
             {
                 _entityMovementController = GetComponent<EntityMovementController>();
             }
-            
+
             if (_entityWeaponController == null)
             {
                 _entityWeaponController = GetComponent<EntityWeaponController>();
             }
-            
+
             if (_entityInteractionController == null)
             {
                 _entityInteractionController = GetComponent<EntityInteractionController>();
             }
-            
+
             if (_entityInventoryController == null)
             {
                 _entityInventoryController = GetComponent<EntityInventoryController>();
             }
-            
+
             if (_playerUIController == null)
             {
                 _playerUIController = GetComponent<PlayerUIController>();
             }
-            
+
             if (_inputHandler == null)
             {
                 _inputHandler = GetComponent<InputHandler>();
             }
-            
+
             if (_cameraController == null)
             {
                 _cameraController = GetComponent<CameraController>();
             }
-            
+
             if (_rigidbody2D == null)
             {
                 _rigidbody2D = GetComponent<Rigidbody2D>();
             }
-            
+
             if (_collider == null)
             {
                 _collider = GetComponent<Collider2D>();
             }
         }
- 
+
         public override void Initialize()
         {
             if (IsInitialized)
             {
                 return;
             }
-            
+
             if (_camera == null)
             {
                 _camera = Camera.main;
             }
-
-            // if (!isLocalPlayer)
-            // {
-            //     Destroy(_camera);
-            // }
 
             var inputModule = new PlayerInput(_camera);
             var gameResourcesManager = GameResourcesManager.Instance;
@@ -118,7 +113,7 @@ namespace PlayerModule
             _cameraController?.Initialize(_camera,
                 transform);
             _entityWeaponController?.Initialize(inputModule,
-                _entityStats, _entityObjectContainer);
+                _entityStats);
             _entityInteractionController?.Initialize(inputModule);
             _entityController.Initialize(_entityStats,
                 _entityMovementController,
@@ -133,14 +128,23 @@ namespace PlayerModule
         }
 
         [ClientRpc]
-        public void InitializeRpc() => 
+        public void InitializeAllRpc(string playerName)
+        {
+            transform.name = playerName;
             Initialize();
+        }
 
+        [TargetRpc]
+        public void InitializeRpc(NetworkConnectionToClient target, string playerName)
+        {
+            transform.name = playerName;
+            Initialize();
+        }
 
         public override void Deinitialize()
         {
             base.Deinitialize();
-            
+
             _entityMovementController?.Deinitialize();
             _entityWeaponController?.Deinitialize();
             _entityInteractionController?.Deinitialize();
