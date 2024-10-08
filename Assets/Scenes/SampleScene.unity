@@ -414,9 +414,8 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  _poolConfigs:
-  - prefabsPool: {fileID: 1531819939}
-    poolType: 0
+  _prefabPools:
+  - {fileID: 1531819939}
 --- !u!1001 &365771418
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -949,7 +948,7 @@ GameObject:
   - component: {fileID: 1531819938}
   - component: {fileID: 1531819939}
   m_Layer: 0
-  m_Name: PrefabPool
+  m_Name: 'Prefab pool: Bullet'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -984,6 +983,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _prefab: {fileID: 6038837581636154012, guid: e1903c91e83374942b5234be51bc17c2, type: 3}
   _preloadCount: 10
+  _poolType: 0
 --- !u!1 &1658128658
 GameObject:
   m_ObjectHideFlags: 0
