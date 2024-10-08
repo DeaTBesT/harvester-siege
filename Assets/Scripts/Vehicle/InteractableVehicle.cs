@@ -154,6 +154,14 @@ namespace Vehicle
             _takeSeatsObjects.Add(interactorNetId);
 
             _inputHandler.SetEnableByNetId(interactorNetId, _takeSeats == 1);
+
+            if (isServer)
+            {
+                if (_takeSeats <= 1)
+                {
+                    ChangeAuthority(interactorNetId);
+                }
+            }
         }
 
         [Command(requiresAuthority = false)]
@@ -171,11 +179,18 @@ namespace Vehicle
 
             if (_takeSeatsObjects.Count > 0)
             {
-                _inputHandler.SetEnableByNetId(_takeSeatsObjects.First(), true);
+                var netIdFirst = _takeSeatsObjects.First();
+
+                if (isServer)
+                {
+                    ChangeAuthority(netIdFirst);
+                }
+
+                _inputHandler.SetEnableByNetId(netIdFirst, true);
             }
         }
 
-        [Server]
+        [ClientRpc]
         private void ForceRemovePlayerSeatRpc(NetworkIdentity interactorNetId)
         {
             _takeSeats = Mathf.Clamp(_takeSeats - NUMBER_PLAYER_TAKE_SEAT, 0, _seatsNumber);
@@ -186,6 +201,13 @@ namespace Vehicle
             {
                 _inputHandler.SetEnableByNetId(_takeSeatsObjects[0], true);
             }
+        }
+
+        [Server]
+        private void ChangeAuthority(NetworkIdentity newOwner)
+        {
+            netIdentity.RemoveClientAuthority();
+            netIdentity.AssignClientAuthority(newOwner.connectionToClient);
         }
 
         private bool TryExitVehicle(out Vector2 exitPosition)

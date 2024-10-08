@@ -19,7 +19,7 @@ namespace Vehicle
         [SyncVar] private float _accelerationInput = 0;
         [SyncVar] private float _steeringInput = 0;
 
-        private float _rotationAngle = 0;
+        [SyncVar] private float _rotationAngle = 0;
         [SyncVar] private float _velocityUp;
 
         private InteractableVehicle _interactableVehicle;
@@ -59,11 +59,6 @@ namespace Vehicle
         [Command(requiresAuthority = false)]
         private void NetworkInput(float acceleration, float steering)
         {
-            if (!isServer)
-            {
-                return;
-            }
-
             _accelerationInput = acceleration;
             _steeringInput = steering;
         }
@@ -73,7 +68,7 @@ namespace Vehicle
 
         private void FixedUpdate()
         {
-            if (!isServer)
+            if (!isOwned)
             {
                 return;
             }
@@ -102,7 +97,6 @@ namespace Vehicle
                 return;
             }
 
-            
             _rigidbody2d.drag = _accelerationInput == 0
                 ? Mathf.Lerp(_rigidbody2d.drag, RIGIDBODY_DRAG_IDLE, Time.fixedDeltaTime * 3f)
                 : RIGIDBODY_DRAG_DRIVE;
@@ -126,9 +120,24 @@ namespace Vehicle
             minSpeedForTurning = Mathf.Clamp01(minSpeedForTurning);
 
             var steering = _velocityUp >= 0 ? 1 : -1;
-            _rotationAngle -= _steeringInput  * steering * _turnFactor * minSpeedForTurning;
-
+            _rotationAngle -= _steeringInput * steering * _turnFactor * minSpeedForTurning;
+            SetRotationAngleCmd(_rotationAngle);
             _rigidbody2d.MoveRotation(_rotationAngle);
+        }
+
+        [Command(requiresAuthority = false)]
+        private void SetRotationAngleCmd(float rotationAngle) => 
+            SetRotationAngleRpc(rotationAngle);
+
+        [ClientRpc]
+        private void SetRotationAngleRpc(float rotationAngle)
+        {
+            if (isOwned)
+            {
+                return;
+            }
+            
+            _rotationAngle = rotationAngle;
         }
     }
 }
