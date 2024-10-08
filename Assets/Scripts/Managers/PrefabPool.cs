@@ -1,4 +1,5 @@
-﻿using Mirror;
+﻿using Enums;
+using Mirror;
 using UnityEngine;
 using Utils.ObjectPool;
 
@@ -8,8 +9,17 @@ namespace Managers
     {
         [SerializeField] private GameObject _prefab;
         [SerializeField] private int _preloadCount;
-
+        [SerializeField] private PoolType _poolType;
+        
         private GameObjectPool _objectPool;
+
+        public PoolType TypePool => _poolType;
+        
+        private void OnValidate()
+        {
+            var str = _prefab == null ? "Prefab pool" : $"Prefab pool: {_prefab.name}";
+            gameObject.name = str;
+        }
 
         private void Start()
         {

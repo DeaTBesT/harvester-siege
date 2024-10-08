@@ -1,27 +1,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using Enums;
-using Interfaces;
 using UnityEngine;
 
 namespace Managers
 {
     public class PrefabPoolManager : Singleton<PrefabPoolManager>
     {
-        [SerializeField] private List<PrefabPoolConfig> _poolConfigs = new();
-
-        [System.Serializable]
-        public class PrefabPoolConfig
-        {
-            public PrefabPool prefabsPool;
-            public PoolType poolType;
-        }
-
-        public bool IsEnable { get; set; }
+        [SerializeField] private List<PrefabPool> _prefabPools = new();
 
         public PrefabPool GetPool(PoolType poolType)
         {
-            var pool = _poolConfigs.FirstOrDefault(x => x.poolType == poolType);
+            var pool = _prefabPools.FirstOrDefault(x => x.TypePool == poolType);
 
             if (pool == null)
             {
@@ -30,7 +20,7 @@ namespace Managers
 #endif
             }
 
-            return pool.prefabsPool;
+            return pool;
         }
     }
 }

@@ -15,30 +15,40 @@ namespace Managers
         public override void OnStartServer() =>
             NetworkServer.OnConnectedEvent += OnPlayerConnected;
 
-        public override void OnStopServer() => 
+        public override void OnStopServer() =>
             NetworkServer.OnConnectedEvent -= OnPlayerConnected;
 
-        private void OnPlayerConnected(NetworkConnectionToClient conn) => 
+        private void OnPlayerConnected(NetworkConnectionToClient conn) =>
             StartCoroutine(LoadRoutine(conn));
 
         private IEnumerator LoadRoutine(NetworkConnectionToClient conn)
         {
             yield return new WaitUntil(() => conn.identity != null);
 
+#if UNITY_EDITOR
+
             Debug.Log($"{conn.identity.name} is exist");
-            
+#endif
             if (!conn.identity.TryGetComponent(out EntityInitializer initializer))
             {
+#if UNITY_EDITOR
+
                 Debug.LogError($"Entity initializer is null: {conn.connectionId}");
+#endif
+                yield break;
             }
-            
+
             yield return new WaitUntil(() => initializer.IsInitialized);
-            
+
+#if UNITY_EDITOR
             Debug.Log($"{conn.identity.name} is initilaized. Check local player");
-            
+#endif
             if (!conn.identity.isLocalPlayer)
             {
+#if UNITY_EDITOR
+
                 Debug.Log($"{conn.identity.name}, start load data");
+#endif
                 LoadAllData(conn);
             }
         }
@@ -57,7 +67,10 @@ namespace Managers
 
             if (isContains)
             {
+#if UNITY_EDITOR
+
                 Debug.LogWarning("Loader is contains");
+#endif
                 return;
             }
 

@@ -38,7 +38,7 @@ namespace Player
             {
                 if (_currentInteractable.TryGetComponent(out IInteractable interactable))
                 {
-                    interactable?.ForceFinishInteract(this);
+                    interactable.ForceFinishInteract(this);
                     ChangeInteractionEvents();
                 }
             }
@@ -82,7 +82,7 @@ namespace Player
         {
             if (_currentInteractable.TryGetComponent(out IInteractable interactable))
             {
-                interactable?.FinishInteract(this);
+                interactable.FinishInteract(this);
                 ChangeInteractionEvents();
             }
         }
