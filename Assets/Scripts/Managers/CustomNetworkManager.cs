@@ -36,7 +36,6 @@ namespace Managers
             yield return new WaitUntil(() => isInitializedOtherPlayers);
 
             initializer.InitializeAllRpc(playerName);
-            NetworkServer.SpawnObjects();
 
             yield return new WaitUntil(() => initializer.IsInitialized);
 
@@ -92,14 +91,6 @@ namespace Managers
 #endif
 
             var identity = conn.identity;
-
-            if (identity.isServer)
-            {
-#if UNITY_EDITOR
-                Debug.Log($"{identity.name} is server");
-#endif
-                yield break;
-            }
 
             NetworkServer.RemovePlayerForConnection(conn);
             identity.AssignClientAuthority(serverConn);
