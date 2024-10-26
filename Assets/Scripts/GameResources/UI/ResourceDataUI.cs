@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using GameResources.Core;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,16 +12,16 @@ namespace GameResources.UI
         [SerializeField] private TextMeshProUGUI _textAmmount;
         [SerializeField] private Image _resourceImage;
 
-        public ResourceData ResourceDataConfig { get; private set; }
+        public ResourceData ResourceAsData { get; private set; }
 
         public void ChangeResourceData(ResourceData resourceData)
         {
-            ResourceDataConfig = resourceData;
-            _resourceImage.sprite = ResourceDataConfig.gameResourceDataConfig.ResourceSprite;
+            ResourceAsData = resourceData;
+            _resourceImage.sprite = ResourceAsData.ResourceConfig.ResourceSprite;
             UpdateResource();
         }
 
         public void UpdateResource() => 
-            _textAmmount.text = $"{ResourceDataConfig.AmountResource}";
+            _textAmmount.text = $"{ResourceAsData.AmountResource}";
     }
 }

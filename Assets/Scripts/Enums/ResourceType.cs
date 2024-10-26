@@ -1,6 +1,6 @@
-﻿namespace GameResources
+﻿namespace Enums
 {
-    public enum GameResourceType
+    public enum ResourceType
     {
         GreenBio,
         OrangeMetal,
