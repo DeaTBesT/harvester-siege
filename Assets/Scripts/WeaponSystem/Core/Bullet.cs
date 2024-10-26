@@ -60,17 +60,13 @@ namespace WeaponSystem.Core
                 return;
             }
             
-            DestroyBulletCmd();
+            DestroyBulletServer();
         }
 
         private void DestroyDelay(int destroyTime) => 
             Invoke(nameof(ForceDestroy), destroyTime);
 
-        [Command(requiresAuthority = false)]
-        private void DestroyBulletCmd() => 
-            DestroyBulletServer();
-
-        [Server]
+        [ServerCallback]
         private void DestroyBulletServer()
         {
             _onReachTarget();
