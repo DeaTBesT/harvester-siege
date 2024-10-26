@@ -3,9 +3,17 @@ using Mirror;
 using UnityEngine;
 using ParrelSync;
 
-public class MultiplayerTestScript : MonoBehaviour
+public class MultiplayerTestController : MonoBehaviour
 {
     [SerializeField] private NetworkManager _networkManager;
+
+    private void OnValidate()
+    {
+        if (_networkManager == null)
+        {
+            _networkManager = FindObjectOfType<NetworkManager>();
+        }
+    }
 
     private void Start()
     {
