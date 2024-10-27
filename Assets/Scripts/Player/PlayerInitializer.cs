@@ -143,11 +143,10 @@ namespace PlayerModule
 
         public override void Deinitialize()
         {
-            base.Deinitialize();
-
             _entityMovementController?.Deinitialize();
             _entityWeaponController?.Deinitialize();
             _entityInteractionController?.Deinitialize();
+            _entityInventoryController?.Deinitialize();
 
             IsInitialized = false;
         }
