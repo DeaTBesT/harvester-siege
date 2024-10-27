@@ -43,5 +43,16 @@ namespace GameResources
         [Command(requiresAuthority = false)]
         private void DestroySelfCmd() =>
             NetworkServer.Destroy(gameObject);
+
+        public void SetAmount(int amount) =>
+            SetAmountCmd(amount);
+
+        [Command(requiresAuthority = false)]
+        private void SetAmountCmd(int amount) =>
+            SetAmountRpc(amount);
+
+        [ClientRpc]
+        private void SetAmountRpc(int amount) =>
+            _resourceData.SetAmount(amount);
     }
 }
