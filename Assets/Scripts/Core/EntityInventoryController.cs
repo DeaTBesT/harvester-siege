@@ -1,10 +1,10 @@
-﻿using GameResources;
+﻿using GameResources.Core;
 using Interfaces;
 using Mirror;
 
 namespace Core
 {
-    public class EntityInventoryController : NetworkBehaviour, IInitialize
+    public class EntityInventoryController : NetworkBehaviour, IInitialize, IDeinitialize
     {
         public bool IsEnable { get; set; }
         
@@ -13,6 +13,11 @@ namespace Core
             
         }
 
+        public virtual void Deinitialize()
+        {
+            throw new System.NotImplementedException();
+        }
+        
         public virtual void AddResource(ResourceData resourceData)
         {
             
