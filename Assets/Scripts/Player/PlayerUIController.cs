@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using GameResources;
+using GameResources.Core;
 using GameResources.UI;
 using Interfaces;
 using Managers;
@@ -51,7 +51,7 @@ namespace Player
 
         private void OnAddResource(ResourceData data)
         {
-            var resourceDataUI = _resourcesDataUI.FirstOrDefault(x => x.ResourceDataConfig == data);
+            var resourceDataUI = _resourcesDataUI.FirstOrDefault(x => x.ResourceAsData.ResourceConfig.TypeResource == data.ResourceConfig.TypeResource);
 
             if (resourceDataUI != null)
             {
@@ -60,7 +60,7 @@ namespace Player
             }
 
 #if UNITY_EDITOR
-            Debug.LogError("None resource data UI");
+            Debug.LogError($"None resource data UI. Resource type: {data.ResourceConfig.TypeResource}");
 #endif
         }
 
@@ -69,7 +69,7 @@ namespace Player
 
         private void OnRemoveResource(ResourceData data)
         {
-            var resourceDataUI = _resourcesDataUI.FirstOrDefault(x => x.ResourceDataConfig == data);
+            var resourceDataUI = _resourcesDataUI.FirstOrDefault(x => x.ResourceAsData.ResourceConfig.TypeResource == data.ResourceConfig.TypeResource);
 
             if (resourceDataUI != null)
             {
