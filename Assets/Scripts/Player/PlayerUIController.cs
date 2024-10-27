@@ -73,8 +73,7 @@ namespace Player
 
             if (resourceDataUI != null)
             {
-                _resourcesDataUI.Remove(resourceDataUI);
-                Destroy(resourceDataUI.gameObject);
+                resourceDataUI.UpdateResource();
                 return;
             }
 
@@ -101,6 +100,8 @@ namespace Player
             {
                 Destroy(child.gameObject);
             }
+            
+            _resourcesDataUI.Clear();
         }
     }
 }
