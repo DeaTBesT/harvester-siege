@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c437138062134e68a80541df62e675f5, type: 3}
-  m_Name: Test Game Resource
+  m_Name: Test Game Resource 1
   m_EditorClassIdentifier: 
   _title: empty
   _description: empty
-  _resourceSprite: {fileID: 21300000, guid: 13ba34da9011744c884f459ce4699444, type: 3}
-  _resourceType: 0
-  _resourcePrefab: {fileID: 2506372898403493757, guid: 5f6563213ce28454db7b4e5c738cf598, type: 3}
+  _resourceSprite: {fileID: 21300000, guid: 69c30291565a1407abc7ca25da395ea9, type: 3}
+  _resourceType: 1
+  _resourcePrefab: {fileID: 2506372898403493757, guid: 154e40793a557e243a8bf70dbf8156ac, type: 3}
