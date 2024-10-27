@@ -1,11 +1,12 @@
 ﻿using Interfaces;
 using Mirror;
+using UnityEngine;
 
 namespace Core
 {
     public abstract class EntityStats : NetworkBehaviour, IInitialize
     {
-        protected float _health;
+        [SerializeField] protected float _health;
         
         public abstract int TeamId { get; }
 
