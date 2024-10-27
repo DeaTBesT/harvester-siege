@@ -86,6 +86,16 @@ namespace Player
         {
             ClearResourcesPanel();
 
+            dataList.Sort((ResourceData x1, ResourceData x2) =>
+            {
+                if (x1.ResourceConfig.SortPriority < x2.ResourceConfig.SortPriority)
+                {
+                    return -1;
+                }
+
+                return 1;
+            });
+            
             foreach (var data in dataList)
             {
                 var resourceDataUI = Instantiate(_resourcePrefab, _resourcesParent);

@@ -6,6 +6,8 @@ namespace GameResources.Core
     [CreateAssetMenu(menuName = "Game resources/New resource")]
     public class ResourceConfig : ScriptableObject
     {
+        [SerializeField] private int _sortPriority = 0;
+        
         [SerializeField] private string _title = "empty title";
         [SerializeField] private string _description = "empty description";
 
@@ -14,7 +16,8 @@ namespace GameResources.Core
         [SerializeField] private ResourceType _resourceType;
 
         [SerializeField] private GameObject _resourcePrefab;
-        
+
+        public int SortPriority => _sortPriority;
         public string Title => _title;
         public string Description => _description;
         public Sprite ResourceSprite => _resourceSprite;
