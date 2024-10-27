@@ -100,11 +100,36 @@ namespace Managers
 
         [Server]
         private void RemoveResourceServer(string gameResourceName, int amount) =>
+        [Command(requiresAuthority = false)]
+        private void RemoveResourceCmd(string gameResourceName, int amount) =>
             RemoveResourceRpc(gameResourceName, amount);
 
         [ClientRpc]
         private void RemoveResourceRpc(string gameResourceName, int amount)
         {
+            var gameResource =
+                (ResourceConfig)NetworkScriptableObjectSerializer.DeserializeScriptableObject(gameResourceName);
+            var resourceData = _resourcesData.FirstOrDefault(x =>
+                x.ResourceConfig.TypeResource == gameResource.TypeResource);
+
+            if (resourceData == null)
+            {
+#if UNITY_EDITOR
+                Debug.LogError($"ResourceData with type {gameResource.TypeResource} isn't exist");
+#endif
+                return;
+            }
+
+            if (resourceData.AmountResource - amount > 0)
+            {
+                resourceData.RemoveResource(amount);
+                OnRemoveResource?.Invoke(resourceData);
+            }
+            else
+            {
+                _resourcesData.Remove(resourceData);
+                OnChangeResourcesData?.Invoke(_resourcesData);
+            }
         }
     }
 }
