@@ -15,9 +15,9 @@ namespace WeaponSystem.Core
         [SyncVar] private float _damage;
         private float _bulletSpeed;
         private Action _onReachTarget;
-        
+
         public bool IsEnable { get; set; }
-        
+
         protected override void OnValidate()
         {
             if (_rigidbody == null)
@@ -25,6 +25,7 @@ namespace WeaponSystem.Core
                 _rigidbody = GetComponent<Rigidbody2D>();
             }
         }
+
         public void Initialize(params object[] objects)
         {
             _teamId = (int)objects[0];
@@ -35,18 +36,13 @@ namespace WeaponSystem.Core
             DestroyDelay((int)objects[3]);
         }
 
-        private void FixedUpdate() => 
+        private void FixedUpdate() =>
             _rigidbody.MovePosition(transform.position + transform.up * _bulletSpeed * Time.fixedDeltaTime);
 
         private void OnTriggerEnter2D(Collider2D other)
         {
             if (other.TryGetComponent(out EntityStats entityStats))
             {
-                if (entityStats.TeamId == _teamId)
-                {
-                    return;
-                }
-
                 entityStats.TakeDamage(_teamId, _damage);
             }
 
@@ -59,11 +55,11 @@ namespace WeaponSystem.Core
             {
                 return;
             }
-            
+
             DestroyBulletServer();
         }
 
-        private void DestroyDelay(int destroyTime) => 
+        private void DestroyDelay(int destroyTime) =>
             Invoke(nameof(ForceDestroy), destroyTime);
 
         [ServerCallback]
