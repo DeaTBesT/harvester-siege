@@ -72,6 +72,10 @@ namespace GameResources
 
         [Command(requiresAuthority = false)]
         private void DestroySelfCmd() =>
+            DestroySelfServer();
+
+        [ServerCallback]
+        private void DestroySelfServer() =>
             NetworkServer.Destroy(gameObject);
 
         public void SetAmount(int amount) =>
