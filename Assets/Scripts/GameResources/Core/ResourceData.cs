@@ -19,7 +19,7 @@ namespace GameResources.Core
             _amount = amount;
         }
 
-        public void SetAmount(int amount) => 
+        public void SetAmount(int amount) =>
             SetAmountCmd(amount);
 
         [Command(requiresAuthority = false)]
@@ -55,6 +55,14 @@ namespace GameResources.Core
         public static void InstantiateResource(ResourceData resourceData, Vector3 spawnPosition = default,
             Quaternion spawnRotation = default)
         {
+            if (resourceData == null)
+            {
+#if UNITY_EDITOR
+                Debug.LogError("Resource data isn't exist");
+#endif
+                return;
+            }
+            
             var newResource = Object.Instantiate(resourceData.ResourceConfig.ResourcePrefab, spawnPosition,
                 spawnRotation);
             NetworkServer.Spawn(newResource);
@@ -75,9 +83,10 @@ namespace GameResources.Core
 #endif
                 return;
             }
-            
-            var resourceConfig = (ResourceConfig)NetworkScriptableObjectSerializer.DeserializeScriptableObject(resourceName);
-            
+
+            var resourceConfig =
+                (ResourceConfig)NetworkScriptableObjectSerializer.DeserializeScriptableObject(resourceName);
+
             if (resourceConfig == null)
             {
 #if UNITY_EDITOR
@@ -85,7 +94,7 @@ namespace GameResources.Core
 #endif
                 return;
             }
-            
+
             var newResource = Object.Instantiate(resourceConfig.ResourcePrefab, spawnPosition,
                 spawnRotation);
             NetworkServer.Spawn(newResource);
