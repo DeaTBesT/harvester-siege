@@ -9,6 +9,26 @@ namespace Managers
     {
         [SerializeField] private List<PrefabPool> _prefabPools = new();
 
+        protected override void OnValidate()
+        {
+            if (transform.childCount != _prefabPools.Count)
+            {
+                _prefabPools.Clear();
+
+                foreach (Transform child in transform)
+                {
+                    if (child.TryGetComponent(out PrefabPool prefabPool))
+                    {
+                        _prefabPools.Add(prefabPool);
+                    }
+                    else
+                    {
+                        Debug.LogWarning($"{child.name} isn't prefab pool");
+                    }
+                }
+            }
+        }
+
         public PrefabPool GetPool(PoolType poolType)
         {
             var pool = _prefabPools.FirstOrDefault(x => x.TypePool == poolType);
