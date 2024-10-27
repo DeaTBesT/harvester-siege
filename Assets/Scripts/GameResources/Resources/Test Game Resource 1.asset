@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c437138062134e68a80541df62e675f5, type: 3}
   m_Name: Test Game Resource 1
   m_EditorClassIdentifier: 
+  _sortPriority: 1
   _title: empty
   _description: empty
   _resourceSprite: {fileID: 21300000, guid: 69c30291565a1407abc7ca25da395ea9, type: 3}
