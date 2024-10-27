@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using GameResources;
+using GameResources.Core;
 using Interfaces;
 using Managers.CustomSerialization;
 using Mirror;
@@ -19,10 +18,10 @@ namespace Managers
         public Action<ResourceData> OnRemoveResource { get; set; }
         public Action<List<ResourceData>> OnChangeResourcesData { get; set; }
 
-        public override void OnStartServer() => 
+        public override void OnStartServer() =>
             NetworkLoadManager.Instance.AddLoader(this);
 
-        public override void OnStopServer() => 
+        public override void OnStopServer() =>
             NetworkLoadManager.Instance.RemoveLoader(this);
 
         [Server]
@@ -34,7 +33,7 @@ namespace Managers
             foreach (var resourceData in _resourcesData)
             {
                 resourceNameList.Add(
-                    NetworkScriptableObjectSerializer.SerializeScriptableObject(resourceData.gameResourceDataConfig));
+                    NetworkScriptableObjectSerializer.SerializeScriptableObject(resourceData.ResourceConfig));
                 resourceAmountList.Add(resourceData.AmountResource);
             }
 
@@ -59,27 +58,17 @@ namespace Managers
                 var resourceAmount = data.GameResourceAmountList[i];
 
                 var gameResource =
-                    (GameResourceData)NetworkScriptableObjectSerializer.DeserializeScriptableObject(resourceName);
+                    (ResourceConfig)NetworkScriptableObjectSerializer.DeserializeScriptableObject(resourceName);
                 _resourcesData.Add(new ResourceData(gameResource, resourceAmount));
             }
 
             OnChangeResourcesData?.Invoke(_resourcesData);
         }
 
-        public void AddResource(GameResourceData gameResourceData, int amount = 1) =>
-            AddResourceCmd(NetworkScriptableObjectSerializer.SerializeScriptableObject(gameResourceData), amount);
-
-        [Command(requiresAuthority = false)]
-        private void AddResourceCmd(string gameResourceName, int amount) =>
-            AddResourceRpc(gameResourceName, amount);
-
-        [ClientRpc]
-        private void AddResourceRpc(string gameResourceName, int amount)
+        public void AddResource(ResourceConfig gameResourceData, int amount = 1)
         {
-            var gameResource =
-                (GameResourceData)NetworkScriptableObjectSerializer.DeserializeScriptableObject(gameResourceName);
             var resourceData = _resourcesData.FirstOrDefault(x =>
-                x.gameResourceDataConfig.TypeGameResource == gameResource.TypeGameResource);
+                x.ResourceConfig.TypeResource == gameResourceData.TypeResource);
 
             if (resourceData != null)
             {
@@ -88,18 +77,14 @@ namespace Managers
             }
             else
             {
-                _resourcesData.Add(new ResourceData(gameResource, amount));
+                _resourcesData.Add(new ResourceData(gameResourceData, amount));
                 OnChangeResourcesData?.Invoke(_resourcesData);
             }
         }
 
-        public void RemoveResource(GameResourceData gameResourceData, int amount = 1)
-        {
-            RemoveResourceServer(NetworkScriptableObjectSerializer.SerializeScriptableObject(gameResourceData), amount);
-        }
+        public void RemoveResource(ResourceConfig resourceConfig, int amount = 1) => 
+            RemoveResourceCmd(NetworkScriptableObjectSerializer.SerializeScriptableObject(resourceConfig), amount);
 
-        [Server]
-        private void RemoveResourceServer(string gameResourceName, int amount) =>
         [Command(requiresAuthority = false)]
         private void RemoveResourceCmd(string gameResourceName, int amount) =>
             RemoveResourceRpc(gameResourceName, amount);
