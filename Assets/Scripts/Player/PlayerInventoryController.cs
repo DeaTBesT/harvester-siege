@@ -2,6 +2,7 @@
 using System.Linq;
 using Core;
 using GameResources.Core;
+using Interfaces;
 using Managers;
 using Mirror;
 using UnityEngine;
@@ -9,7 +10,7 @@ using Utils.Networking;
 
 namespace Player
 {
-    public class PlayerInventoryController : EntityInventoryController
+    public class PlayerInventoryController : EntityInventoryController, IInstantiateResource
     {
         private GameResourcesManager _gameResourcesManager;
 
@@ -54,30 +55,30 @@ namespace Player
             var resourceName = NetworkScriptableObjectSerializer.SerializeScriptableObject(resourceData.ResourceConfig);
             var resourceAmount = resourceData.AmountResource;
 
-            InstanceResource(resourceName, resourceAmount);
+            InstantiateResource(resourceName, resourceAmount);
 
             _gameResourcesManager.RemoveResource(resourceData.ResourceConfig, resourceAmount);
             RemoveResourceDataCmd(resourceName);
         }
 
-        private void InstanceResource(string resourceName, int amount)
+        public void InstantiateResource(string resourceName, int amount)
         {
             if (isServer)
             {
-                InstanceResourceServer(resourceName, amount);
+                InstantiateResourceServer(resourceName, amount);
             }
             else
             {
-                InstanceResourceCmd(resourceName, amount);
+                InstantiateResourceCmd(resourceName, amount);
             }
         }
         
         [Command]
-        private void InstanceResourceCmd(string resourceName, int amount) =>
-            InstanceResourceServer(resourceName, amount);
+        public void InstantiateResourceCmd(string resourceName, int amount) =>
+            InstantiateResourceServer(resourceName, amount);
 
         [Server]
-        private void InstanceResourceServer(string resourceName, int amount) =>
+        public void InstantiateResourceServer(string resourceName, int amount) =>
             ResourceData.InstantiateResource(resourceName, amount, transform.position);
 
         [Command]
