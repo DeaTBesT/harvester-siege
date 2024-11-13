@@ -18,14 +18,10 @@ namespace Core
         
         public abstract void ChangePosition(Vector2 newPosition);
 
-        public virtual void ActivateMoveEntity()
-        {
+        public virtual void ActivateMoveEntity() => 
             throw new NotImplementedException();
-        }
-        
-        public virtual void DiactivateMoveEntity()
-        {
+
+        public virtual void DiactivateMoveEntity() => 
             throw new NotImplementedException();
-        }
     }
 }
