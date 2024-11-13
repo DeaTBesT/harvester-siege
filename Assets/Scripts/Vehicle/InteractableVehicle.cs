@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Core;
+using Enums;
 using InputModule;
 using Interfaces;
 using Managers;
@@ -29,8 +30,8 @@ namespace Vehicle
 
         public int TakeSeats => _takeSeats;
 
-        public bool OneTimeInteract => false;
-
+        public InteractType TypeInteract => InteractType.Toggle;
+        
         public NetworkIdentity NetIdentity => netIdentity;
 
         public Action OnInteract { get; set; }
@@ -68,7 +69,7 @@ namespace Vehicle
         public void Initialize(params object[] objects) =>
             _inputHandler = objects[0] as InputHandler;
 
-        public bool TryInteract(IInteractor interactor)
+        public bool TryInteract(IInteractor interactor, Action onFinishInteract = null)
         {
             if (_takeSeats >= _seatsNumber)
             {
@@ -97,6 +98,16 @@ namespace Vehicle
             OnInteract?.Invoke();
 
             return true;
+        }
+
+        public void StartHolding(IInteractor interactor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StopHolding()
+        {
+            throw new NotImplementedException();
         }
 
         public void FinishInteract(IInteractor interactor)

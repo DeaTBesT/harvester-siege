@@ -1,4 +1,5 @@
 ﻿using System;
+using Enums;
 using GameResources.Core;
 using GameResources.CustomSerialization;
 using Interfaces;
@@ -13,7 +14,7 @@ namespace GameResources
     {
         [SerializeField] private ResourceData _resourceData;
 
-        public bool OneTimeInteract => true;
+        public InteractType TypeInteract => InteractType.OneTime;
         public NetworkIdentity NetIdentity => netIdentity;
 
         public Action OnInteract { get; set; }
@@ -46,7 +47,7 @@ namespace GameResources
             _resourceData.SetAmount(data.Amount);
         }
 
-        public bool TryInteract(IInteractor interactor)
+        public bool TryInteract(IInteractor interactor, Action onFinishInteract = null)
         {
             var interactableNetId = interactor.InteractableNetId;
 
@@ -58,6 +59,16 @@ namespace GameResources
             }
 
             return false;
+        }
+
+        public void StartHolding(IInteractor interactor)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void StopHolding()
+        {
+            throw new NotImplementedException();
         }
 
         public void FinishInteract(IInteractor interactor)
