@@ -21,6 +21,7 @@ namespace Core
             if (_inputModule != null)
             {
                 _inputModule.OnInteract += OnInteract;
+                _inputModule.OnInteractUp += OnInteractUp;
             }
             else
             {
@@ -37,6 +38,11 @@ namespace Core
         }
 
         public abstract void OnInteract();
+
+        public virtual void OnInteractUp()
+        {
+            
+        }
 
         public abstract void OnEndInteract();
 
