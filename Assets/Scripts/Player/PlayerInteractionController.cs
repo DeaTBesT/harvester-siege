@@ -1,4 +1,5 @@
 ﻿using Core;
+using Enums;
 using Interfaces;
 using Mirror;
 using UnityEngine;
@@ -39,7 +40,7 @@ namespace Player
                 if (_currentInteractable.TryGetComponent(out IInteractable interactable))
                 {
                     interactable.ForceFinishInteract(this);
-                    ChangeInteractionEvents();
+                    ToggleInteractionEvents();
                 }
             }
         }
@@ -49,12 +50,7 @@ namespace Player
 
         public override void OnInteract()
         {
-            var interactDirection = _mousePosition - (Vector2)_interactPoint.position;
-
-            var hit = Physics2D.Raycast(_interactPoint.position,
-                interactDirection,
-                _interactDistance,
-                _interactLayer);
+            var hit = InteractRay();
 
             if (hit.transform == null)
             {
@@ -63,19 +59,62 @@ namespace Player
 
             if (hit.transform.TryGetComponent(out IInteractable interactable))
             {
-                if (interactable.TryInteract(this))
+                if (interactable.TryInteract(this, OnEndInteract))
                 {
-                    if (!interactable.OneTimeInteract)
+                    switch (interactable.TypeInteract)
                     {
-                        SetCurrentInteractable(interactable.NetIdentity);
-                        ChangeInteractionEvents();
+                        case InteractType.OneTime:
+                        {
+                        }
+                            break;
+                        case InteractType.Toggle:
+                        {
+                            SetCurrentInteractable(interactable.NetIdentity);
+                            ToggleInteractionEvents();
+                        }
+                            break;
+                        case InteractType.Holding:
+                        {
+                            SetCurrentInteractable(interactable.NetIdentity);
+                        }
+                            break;
+                        default:
+                        {
+#if UNITY_EDITOR
+                            Debug.LogError("None interactable type");
+#endif
+                        }
+                            break;
                     }
                 }
             }
         }
 
+        public override void OnInteractUp()
+        {
+            if (_currentInteractable == null)
+            {
+                return;
+            }
+            
+            if (_currentInteractable.TryGetComponent(out IInteractable interactable))
+            {
+                interactable.StopHolding();
+            }
+        }
+        
+        private RaycastHit2D InteractRay()
+        {
+            var interactDirection = _mousePosition - (Vector2)_interactPoint.position;
+
+            return Physics2D.Raycast(_interactPoint.position,
+                interactDirection,
+                _interactDistance,
+                _interactLayer);
+        }
+
         [Command]
-        private void SetCurrentInteractable(NetworkIdentity netIdentity) => 
+        private void SetCurrentInteractable(NetworkIdentity netIdentity) =>
             _currentInteractable = netIdentity;
 
         public override void OnEndInteract()
@@ -83,7 +122,7 @@ namespace Player
             if (_currentInteractable.TryGetComponent(out IInteractable interactable))
             {
                 interactable.FinishInteract(this);
-                ChangeInteractionEvents();
+                ToggleInteractionEvents();
             }
         }
     }
