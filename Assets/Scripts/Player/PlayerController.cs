@@ -103,5 +103,33 @@ namespace Player
         [ClientRpc]
         private void ChangePositionRpc(Vector2 newPosition) =>
             transform.position = newPosition;
+
+        public override void ActivateMoveEntity() => 
+            ActivateMoveEntityCmd();
+
+        [Command(requiresAuthority = false)]
+        private void ActivateMoveEntityCmd() => 
+            ActivateMoveEntityRpc();
+
+        [ClientRpc]
+        private void ActivateMoveEntityRpc()
+        {
+            _entityMovementController.IsEnable = true;
+            _entityWeaponController.IsEnable = true;
+        }
+        
+        public override void DiactivateMoveEntity() => 
+            DiactivateMoveEntityCmd();
+
+        [Command(requiresAuthority = false)]
+        private void DiactivateMoveEntityCmd() => 
+            DiactivateMoveEntityRpc();
+
+        [ClientRpc]
+        private void DiactivateMoveEntityRpc()
+        {
+            _entityMovementController.IsEnable = false;
+            _entityWeaponController.IsEnable = false;
+        }
     }
 }
