@@ -1,6 +1,5 @@
 ﻿using Interfaces;
 using Mirror;
-using UnityEngine;
 
 namespace InputModule
 {
@@ -18,6 +17,7 @@ namespace InputModule
         private void UpdateHandler()
         {
             _input.InteractHandler();
+            _input.InteractUpHandler();
             _input.EscapeHandler();
 
             if (IsEnable)

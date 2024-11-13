@@ -18,6 +18,7 @@ namespace PlayerInputModule
         public Action OnAttackOnce { get; set; }
         public Action OnAttack { get; set; }
         public Action OnInteract { get; set; }
+        public Action OnInteractUp { get; set; }
         public Action<bool> OnEscapeToggle { get; set; }
 
         public PlayerInput(Camera camera)
@@ -73,6 +74,14 @@ namespace PlayerInputModule
             if (Input.GetKeyDown(KeyCode.E))
             {
                 OnInteract?.Invoke();
+            }
+        }
+        
+        public void InteractUpHandler()
+        {
+            if (Input.GetKeyUp(KeyCode.E))
+            {
+                OnInteractUp?.Invoke();
             }
         }
         

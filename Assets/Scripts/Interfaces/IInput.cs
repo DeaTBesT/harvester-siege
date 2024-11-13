@@ -10,6 +10,7 @@ namespace Interfaces
         public Action OnAttackOnce { get; set; }
         public Action OnAttack { get; set; }
         public Action OnInteract { get; set; }
+        public Action OnInteractUp { get; set; }
         public Action<bool> OnEscapeToggle { get; set; }
         
         public void MoveHandler();
@@ -17,6 +18,7 @@ namespace Interfaces
         public void AttackOnceHandler();
         public void AttackHandler();
         public void InteractHandler();
+        public void InteractUpHandler();
         public void EscapeHandler();
     }
 }
