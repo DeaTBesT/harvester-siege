@@ -7,6 +7,7 @@ namespace Interfaces
         NetworkIdentity InteractableNetId { get; }
         
         void OnInteract();
+        void OnInteractUp();
         void OnEndInteract();
     }
 }
