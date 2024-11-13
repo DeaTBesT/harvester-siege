@@ -13,6 +13,7 @@ namespace Player
     {
         [SerializeField] private GameObject _canvas;
         
+        [Header("Resources data")]
         [SerializeField] private Transform _resourcesParent;
         [SerializeField] private ResourceDataUI _resourcePrefab;
 
