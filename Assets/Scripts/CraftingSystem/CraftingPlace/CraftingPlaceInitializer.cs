@@ -2,13 +2,15 @@
 using CraftingSystem.UI;
 using UI;
 using UnityEngine;
-using Utils;
+using Utils.TimerSystem;
+using Utils.TimerSystem.Core;
 
 namespace CraftingSystem
 {
     public class CraftingPlaceInitializer : EntityInitializer
     {
-        private const float HOLDING_TIME = 5f;
+        private const float HOLDING_TIME = 2f;
+        private const float DELAYED_TIME = 0.5f;
         
         [SerializeField] private CraftingUIPanel _craftingUIPanel;
         [SerializeField] private TimerUIPanel _timerUIPanel;
@@ -36,7 +38,7 @@ namespace CraftingSystem
 
         public override void Initialize()
         {
-            _timer = new Timer(_craftingPlace, HOLDING_TIME);
+            _timer = new DelayedTimer(_craftingPlace, HOLDING_TIME, DELAYED_TIME);
             
             _timerUIPanel.Initialize(HOLDING_TIME);
             _craftingPlace.Initialize(_craftingUIPanel,
