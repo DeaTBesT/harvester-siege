@@ -2,7 +2,6 @@
 using CraftingSystem.Core;
 using UI;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace CraftingSystem.UI
 {
@@ -12,7 +11,7 @@ namespace CraftingSystem.UI
 
         [Header("Crafting recipes canvas")]
         [SerializeField] private Transform _buttonsParent;
-        [SerializeField] private Button _buttonPrefab;
+        [SerializeField] private CraftingItemUI _craftingItemUI;
 
         public Action<CraftingRecipe> OnSelectRecipe; 
         
@@ -33,19 +32,12 @@ namespace CraftingSystem.UI
             
             foreach (var recipe in _craftingRecipes)
             {
-                var newButton = Instantiate(_buttonPrefab.gameObject, _buttonsParent);
+                var newItem = Instantiate(_craftingItemUI.gameObject, _buttonsParent);
 
-                if (newButton.TryGetComponent(out Image image))
+                if (newItem.TryGetComponent(out CraftingItemUI craftingItem))
                 {
-                    image.sprite = recipe.OutputResource.ResourceConfig.ResourceSprite;
-                }
-                
-                if (newButton.TryGetComponent(out Button button))
-                {
-                    button.onClick.AddListener(() =>
-                    {
-                        SelectRecipe(recipe);
-                    });
+                    craftingItem.Initialize(recipe);
+                    craftingItem.OnSelectRecipe += SelectRecipe;
                 }
             }
         }
