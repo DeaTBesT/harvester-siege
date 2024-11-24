@@ -49,7 +49,7 @@ namespace GameResources.Core
             RemoveResourceRpc(amount);
 
         [ClientRpc]
-        private void RemoveResourceRpc(int amount) =>
+        private void RemoveResourceRpc(int amount) => 
             _amount = Mathf.Clamp(_amount - amount, 0, int.MaxValue);
 
         public static void InstantiateResource(ResourceData resourceData, Vector3 spawnPosition = default,
