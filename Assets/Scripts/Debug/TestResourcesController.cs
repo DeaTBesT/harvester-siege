@@ -13,7 +13,7 @@ namespace DebugServices
 
         private void Update()
         {
-            if (!isServer)
+            if ((!isServer) || (!isLocalPlayer))
             {
                 return;
             }
