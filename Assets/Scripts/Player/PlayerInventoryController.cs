@@ -16,15 +16,22 @@ namespace Player
 
         private List<ResourceData> _resourcesData = new();
 
+        public List<ResourceData> ResourcesData => _resourcesData;
+        
         public override void Initialize(params object[] objects) =>
             _gameResourcesManager = objects[0] as GameResourcesManager;
 
         public override void Deinitialize() =>
             DropAllResources();
 
-        public override void AddResource(ResourceData addResourceData) =>
-            AddResourceCmd(NetworkScriptableObjectSerializer.SerializeScriptableObject(addResourceData.ResourceConfig),
-                addResourceData.AmountResource);
+        public override void AddResource(ResourceData resourceData)
+        {
+            var resourceName = NetworkScriptableObjectSerializer.SerializeScriptableObject(resourceData.ResourceConfig);
+            var resourceAmount = resourceData.AmountResource;
+            
+            _gameResourcesManager.AddResource(resourceData.ResourceConfig, resourceAmount);
+            AddResourceCmd(resourceName, resourceAmount);
+        }
 
         [Command]
         private void AddResourceCmd(string gameResourceName, int amount) =>
@@ -46,10 +53,39 @@ namespace Player
             {
                 _resourcesData.Add(new ResourceData(gameResource, amount));
             }
-
-            _gameResourcesManager.AddResource(gameResource, amount);
         }
 
+        public override void RemoveResource(ResourceData resourceData)
+        {
+            var resourceName = NetworkScriptableObjectSerializer.SerializeScriptableObject(resourceData.ResourceConfig);
+            var resourceAmount = resourceData.AmountResource;
+
+            _gameResourcesManager.RemoveResource(resourceData.ResourceConfig, resourceAmount);
+            RemoveResourceCmd(resourceName, resourceAmount);
+        }
+
+        [Command]
+        private void RemoveResourceCmd(string resourceName, int amount) => 
+            RemoveResourceRpc(resourceName, amount);
+
+        [ClientRpc]
+        private void RemoveResourceRpc(string resourceName, int amount)
+        {
+            var resourceConfig =
+                (ResourceConfig)NetworkScriptableObjectSerializer.DeserializeScriptableObject(resourceName);
+            var resourceData = _resourcesData.FirstOrDefault(x =>
+                x.ResourceConfig.TypeResource == resourceConfig.TypeResource);
+            
+            if (resourceData.AmountResource - amount > 0)
+            {
+                resourceData.RemoveResource(amount);
+            }
+            else
+            {
+                _resourcesData.Remove(resourceData);
+            }
+        }
+        
         public override void DropResource(ResourceData resourceData)
         {
             var resourceName = NetworkScriptableObjectSerializer.SerializeScriptableObject(resourceData.ResourceConfig);
@@ -58,7 +94,7 @@ namespace Player
             InstantiateResource(resourceName, resourceAmount);
 
             _gameResourcesManager.RemoveResource(resourceData.ResourceConfig, resourceAmount);
-            RemoveResourceDataCmd(resourceName);
+            DropResourceDataCmd(resourceName);
         }
 
         public void InstantiateResource(string resourceName, int amount)
@@ -82,11 +118,11 @@ namespace Player
             ResourceData.InstantiateResource(resourceName, amount, transform.position);
 
         [Command]
-        private void RemoveResourceDataCmd(string resourceName) =>
-            RemoveResourceDataRpc(resourceName);
+        private void DropResourceDataCmd(string resourceName) =>
+            DropResourceDataRpc(resourceName);
 
         [ClientRpc]
-        private void RemoveResourceDataRpc(string resourceName)
+        private void DropResourceDataRpc(string resourceName)
         {
             var resourceConfig =
                 (ResourceConfig)NetworkScriptableObjectSerializer.DeserializeScriptableObject(resourceName);
@@ -106,12 +142,13 @@ namespace Player
 
         public override void DropAllResources()
         {
-            for (int i = _resourcesData.Count - 1; i >= 0; i--)
+            for (var i = _resourcesData.Count - 1; i >= 0; i--)
             {
                 DropResource(_resourcesData[i]);
             }
         }
 
+        //TODO:поменять
         private void Update()
         {
             if (!isLocalPlayer)
