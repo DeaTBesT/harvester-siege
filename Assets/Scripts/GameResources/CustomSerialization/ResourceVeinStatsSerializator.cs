@@ -13,8 +13,8 @@ namespace GameResources.CustomSerialization
     public static class ResourceVeinStatsSerializator
     {
         public static void WriteResourceVeinStatsData(this NetworkWriter writer,
-            ResourceVeinStatsData statsData) =>
-            writer.WriteFloat(statsData.Health);
+            ResourceVeinStatsData data) =>
+            writer.WriteFloat(data.Health);
 
         public static ResourceVeinStatsData ReadResourceVeinStatsData(this NetworkReader reader) => 
             new(reader.ReadFloat());
