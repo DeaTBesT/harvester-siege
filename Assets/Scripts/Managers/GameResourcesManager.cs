@@ -52,24 +52,34 @@ namespace Managers
             var reader = new NetworkReader(writerData);
             var data = reader.ReadGameResourcesManagerData();
 
-            for (int i = 0; i < data.GameResourceNameList.Count; i++)
+            for (var i = 0; i < data.GameResourceNameList.Count; i++)
             {
                 var resourceName = data.GameResourceNameList[i];
                 var resourceAmount = data.GameResourceAmountList[i];
 
-                var gameResource =
+                var resourceConfig =
                     (ResourceConfig)NetworkScriptableObjectSerializer.DeserializeScriptableObject(resourceName);
-                _resourcesData.Add(new ResourceData(gameResource, resourceAmount));
+                _resourcesData.Add(new ResourceData(resourceConfig, resourceAmount));
             }
 
             OnChangeResourcesData?.Invoke(_resourcesData);
         }
 
-        public void AddResource(ResourceConfig gameResourceData, int amount = 1)
-        {
-            var resourceData = _resourcesData.FirstOrDefault(x =>
-                x.ResourceConfig.TypeResource == gameResourceData.TypeResource);
+        public void AddResource(ResourceConfig resourceConfig, int amount = 1) => 
+            AddResourceCmd(NetworkScriptableObjectSerializer.SerializeScriptableObject(resourceConfig), amount);
 
+        [Command(requiresAuthority = false)]
+        private void AddResourceCmd(string resourceName, int amount) => 
+            AddResourceRpc(resourceName, amount);
+
+        [ClientRpc]
+        private void AddResourceRpc(string resourceName, int amount)
+        {
+            var resourceConfig =
+                (ResourceConfig)NetworkScriptableObjectSerializer.DeserializeScriptableObject(resourceName);
+            var resourceData = _resourcesData.FirstOrDefault(x =>
+                x.ResourceConfig.TypeResource == resourceConfig.TypeResource);
+            
             if (resourceData != null)
             {
                 resourceData.AddResource(amount);
@@ -77,30 +87,30 @@ namespace Managers
             }
             else
             {
-                _resourcesData.Add(new ResourceData(gameResourceData, amount));
+                _resourcesData.Add(new ResourceData(resourceConfig, amount));
                 OnChangeResourcesData?.Invoke(_resourcesData);
             }
         }
-
+        
         public void RemoveResource(ResourceConfig resourceConfig, int amount = 1) => 
             RemoveResourceCmd(NetworkScriptableObjectSerializer.SerializeScriptableObject(resourceConfig), amount);
 
         [Command(requiresAuthority = false)]
-        private void RemoveResourceCmd(string gameResourceName, int amount) =>
-            RemoveResourceRpc(gameResourceName, amount);
+        private void RemoveResourceCmd(string resourceName, int amount) =>
+            RemoveResourceRpc(resourceName, amount);
 
         [ClientRpc]
-        private void RemoveResourceRpc(string gameResourceName, int amount)
+        private void RemoveResourceRpc(string resourceName, int amount)
         {
-            var gameResource =
-                (ResourceConfig)NetworkScriptableObjectSerializer.DeserializeScriptableObject(gameResourceName);
+            var resourceConfig =
+                (ResourceConfig)NetworkScriptableObjectSerializer.DeserializeScriptableObject(resourceName);
             var resourceData = _resourcesData.FirstOrDefault(x =>
-                x.ResourceConfig.TypeResource == gameResource.TypeResource);
+                x.ResourceConfig.TypeResource == resourceConfig.TypeResource);
 
             if (resourceData == null)
             {
 #if UNITY_EDITOR
-                Debug.LogError($"ResourceData with type {gameResource.TypeResource} isn't exist");
+                Debug.LogError($"ResourceData with type {resourceConfig.TypeResource} isn't exist");
 #endif
                 return;
             }
