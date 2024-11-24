@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c437138062134e68a80541df62e675f5, type: 3}
+  m_Name: Test Game Resource 2
+  m_EditorClassIdentifier: 
+  _sortPriority: 1
+  _title: empty
+  _description: empty
+  _resourceSprite: {fileID: 21300000, guid: 628155fc1c8d344419a1a1e6329742ca, type: 3}
+  _resourceType: 2
+  _resourcePrefab: {fileID: 2506372898403493757, guid: 37d7fd98989fdec42a9026ccfd00fa3b, type: 3}
