@@ -15,7 +15,7 @@ namespace Player
         private Vector2 _mousePosition;
 
         [SyncVar] private NetworkIdentity _currentInteractable;
-
+        
         public override void Initialize(params object[] objects)
         {
             base.Initialize(objects);
@@ -65,6 +65,7 @@ namespace Player
                     {
                         case InteractType.OneTime:
                         {
+                            SetCurrentInteractable(null);
                         }
                             break;
                         case InteractType.Toggle:
@@ -96,13 +97,13 @@ namespace Player
             {
                 return;
             }
-            
+
             if (_currentInteractable.TryGetComponent(out IInteractable interactable))
             {
                 interactable.StopHolding();
             }
         }
-        
+
         private RaycastHit2D InteractRay()
         {
             var interactDirection = _mousePosition - (Vector2)_interactPoint.position;
@@ -113,16 +114,32 @@ namespace Player
                 _interactLayer);
         }
 
-        [Command]
         private void SetCurrentInteractable(NetworkIdentity netIdentity) =>
+            SetCurrentInteractableCmd(netIdentity);
+        
+        [Command]
+        private void SetCurrentInteractableCmd(NetworkIdentity netIdentity) =>
+            SetCurrentInteractableRpc(netIdentity);
+        
+        [ClientRpc]
+        private void SetCurrentInteractableRpc(NetworkIdentity netIdentity) =>
             _currentInteractable = netIdentity;
 
         public override void OnEndInteract()
         {
+            if (_currentInteractable == null)
+            {
+#if UNITY_EDITOR
+                Debug.LogError("Current interactable is null");
+#endif
+                return;
+            }
+
             if (_currentInteractable.TryGetComponent(out IInteractable interactable))
             {
                 interactable.FinishInteract(this);
                 ToggleInteractionEvents();
+                _currentInteractable = null;
             }
         }
     }
