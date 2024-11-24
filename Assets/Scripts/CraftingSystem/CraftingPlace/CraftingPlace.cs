@@ -65,6 +65,11 @@ namespace CraftingSystem
         [Server]
         public void LoadDataServer(NetworkConnectionToClient conn)
         {
+            if (_currentRecipe == null)
+            {
+                return;
+            } 
+            
             var craftingState = (int)_craftingState;
             var selectedRecipe = NetworkScriptableObjectSerializer.SerializeScriptableObject(_currentRecipe);
             var resourceNameList = new List<string>();
