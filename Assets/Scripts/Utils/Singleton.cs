@@ -15,7 +15,7 @@ public class Singleton<T>  : NetworkBehaviour where T:Component
 
                 if (_instance is null)
                 {
-                    GameObject newInstance = new GameObject("GameManager");
+                    var newInstance = new GameObject("GameManager");
                     _instance = newInstance.AddComponent<T>();
                 }
             }

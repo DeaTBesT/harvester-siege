@@ -25,12 +25,12 @@ namespace PlayerInputModule
         {
             _camera = camera;
 
-#if UNITY_EDITOR
             if (_camera == null)
             {
+#if UNITY_EDITOR
                 Debug.LogError("Camera is null");
-            }
 #endif
+            }
         }
 
         public void MoveHandler()

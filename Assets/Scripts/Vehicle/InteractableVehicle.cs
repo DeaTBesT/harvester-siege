@@ -38,7 +38,7 @@ namespace Vehicle
         public Action OnFinishInteract { get; set; }
 
         public bool IsEnable { get; set; }
-
+        
         public override void OnStartServer() =>
             NetworkLoadManager.Instance.AddLoader(this);
 
@@ -102,12 +102,10 @@ namespace Vehicle
 
         public void StartHolding(IInteractor interactor)
         {
-            throw new NotImplementedException();
         }
 
         public void StopHolding()
         {
-            throw new NotImplementedException();
         }
 
         public void FinishInteract(IInteractor interactor)

@@ -17,7 +17,7 @@ namespace Player
 
         public override void OnStartServer() =>
             NetworkLoadManager.Instance.AddLoader(this);
-
+        
         public override void OnStopServer() =>
             NetworkLoadManager.Instance.RemoveLoader(this);
 
