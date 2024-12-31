@@ -17,3 +17,4 @@ MonoBehaviour:
   _fireRate: 7
   _bulletSpeed: 10
   _destroyTime: 1
+  _bulletPrefab: {fileID: 3034168583721003686, guid: e1903c91e83374942b5234be51bc17c2, type: 3}
