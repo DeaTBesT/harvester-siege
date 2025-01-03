@@ -106,9 +106,10 @@ namespace Player
 
         private RaycastHit2D InteractRay()
         {
+            var currentScene = gameObject.scene;
             var interactDirection = _mousePosition - (Vector2)_interactPoint.position;
-
-            return Physics2D.Raycast(_interactPoint.position,
+            
+            return currentScene.GetPhysicsScene2D().Raycast(_interactPoint.position,
                 interactDirection,
                 _interactDistance,
                 _interactLayer);
