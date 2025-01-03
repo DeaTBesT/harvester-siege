@@ -17,7 +17,7 @@ namespace Player
             TakeDamageCmd(amount);
         }
 
-        [Command]
+        [Command(requiresAuthority = false)]
         private void TakeDamageCmd(float amount)
         {
             

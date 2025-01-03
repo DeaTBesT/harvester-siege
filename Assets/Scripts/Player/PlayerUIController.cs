@@ -12,9 +12,10 @@ namespace Player
     public class PlayerUIController : NetworkBehaviour, IInitialize, IDeinitialize
     {
         [SerializeField] private GameObject _canvas;
-        
-        [Header("Resources data")]
-        [SerializeField] private Transform _resourcesParent;
+
+        [Header("Resources data")] [SerializeField]
+        private Transform _resourcesParent;
+
         [SerializeField] private ResourceDataUI _resourcePrefab;
 
         private List<ResourceDataUI> _resourcesDataUI = new();
@@ -29,30 +30,51 @@ namespace Player
             {
                 _canvas.SetActive(false);
             }
-            
+
             _resourcesManager = objects[0] as GameResourcesManager;
 
-            if ((_resourcesManager != null) && (isLocalPlayer))
+            if (_resourcesManager == null)
             {
-                _resourcesManager.OnAddResource += OnAddResource;
-                _resourcesManager.OnChangeResourcesData += OnChangeResources;
-                _resourcesManager.OnRemoveResource += OnRemoveResource;
+#if UNITY_EDITOR
+                Debug.LogError("Resources Manager is null");
+#endif
+                return;
             }
+
+            if (!isLocalPlayer)
+            {
+                return;
+            }
+            
+            _resourcesManager.OnAddResource += OnAddResource;
+            _resourcesManager.OnChangeResourcesData += OnChangeResources;
+            _resourcesManager.OnRemoveResource += OnRemoveResource;
         }
 
         public void Deinitialize(params object[] objects)
         {
-            if (_resourcesManager != null)
+            if (_resourcesManager == null)
             {
-                _resourcesManager.OnAddResource -= OnAddResource;
-                _resourcesManager.OnChangeResourcesData -= OnChangeResources;
-                _resourcesManager.OnRemoveResource -= OnRemoveResource;
+#if UNITY_EDITOR
+                Debug.LogError("Resources Manager is null");
+#endif
+                return;
             }
+
+            if (!isLocalPlayer)
+            {
+                return;
+            }
+            
+            _resourcesManager.OnAddResource -= OnAddResource;
+            _resourcesManager.OnChangeResourcesData -= OnChangeResources;
+            _resourcesManager.OnRemoveResource -= OnRemoveResource;
         }
 
         private void OnAddResource(ResourceData data)
         {
-            var resourceDataUI = _resourcesDataUI.FirstOrDefault(x => x.ResourceAsData.ResourceConfig.TypeResource == data.ResourceConfig.TypeResource);
+            var resourceDataUI = _resourcesDataUI.FirstOrDefault(x =>
+                x.ResourceAsData.ResourceConfig.TypeResource == data.ResourceConfig.TypeResource);
 
             if (resourceDataUI != null)
             {
@@ -65,12 +87,13 @@ namespace Player
 #endif
         }
 
-        private void OnChangeResources(List<ResourceData> dataList) => 
+        private void OnChangeResources(List<ResourceData> dataList) =>
             GenerateResourcesPanel(dataList);
 
         private void OnRemoveResource(ResourceData data)
         {
-            var resourceDataUI = _resourcesDataUI.FirstOrDefault(x => x.ResourceAsData.ResourceConfig.TypeResource == data.ResourceConfig.TypeResource);
+            var resourceDataUI = _resourcesDataUI.FirstOrDefault(x =>
+                x.ResourceAsData.ResourceConfig.TypeResource == data.ResourceConfig.TypeResource);
 
             if (resourceDataUI != null)
             {
@@ -87,7 +110,7 @@ namespace Player
         {
             ClearResourcesPanel();
 
-            dataList.Sort((ResourceData x1, ResourceData x2) =>
+            dataList.Sort((x1, x2) =>
             {
                 if (x1.ResourceConfig.SortPriority < x2.ResourceConfig.SortPriority)
                 {
@@ -96,7 +119,7 @@ namespace Player
 
                 return 1;
             });
-            
+
             foreach (var data in dataList)
             {
                 var resourceDataUI = Instantiate(_resourcePrefab, _resourcesParent);
@@ -107,11 +130,19 @@ namespace Player
 
         private void ClearResourcesPanel()
         {
+            if (_resourcesParent == null)
+            {
+#if UNITY_EDITOR
+                Debug.LogError("Resource panels is null");
+#endif
+                return;
+            }
+
             foreach (Transform child in _resourcesParent)
             {
                 Destroy(child.gameObject);
             }
-            
+
             _resourcesDataUI.Clear();
         }
     }

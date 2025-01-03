@@ -102,7 +102,7 @@ namespace Player
                 _resourcesData.Add(new ResourceData(gameResource, amount));
             }
         }
-
+        
         public override void RemoveResource(ResourceData resourceData)
         {
             var resourceName = NetworkScriptableObjectSerializer.SerializeScriptableObject(resourceData.ResourceConfig);
@@ -163,9 +163,9 @@ namespace Player
 
         [Server]
         public void InstantiateResourceServer(string resourceName, int amount) =>
-            ResourceData.InstantiateResource(resourceName, amount, transform.position);
+            ResourceData.InstantiateResource(resourceName, amount, transform);
 
-        [Command]
+        [Command(requiresAuthority = false)]
         private void DropResourceDataCmd(string resourceName) =>
             DropResourceDataRpc(resourceName);
 
