@@ -51,43 +51,47 @@ namespace Player
         public override void OnInteract()
         {
             var hit = InteractRay();
-
+            
             if (hit.transform == null)
             {
                 return;
             }
 
-            if (hit.transform.TryGetComponent(out IInteractable interactable))
+            if (!hit.transform.TryGetComponent(out IInteractable interactable))
             {
-                if (interactable.TryInteract(this, OnEndInteract))
+                return;
+            }
+
+            if (!interactable.TryInteract(this, OnEndInteract))
+            {
+                return;
+            }
+            
+            switch (interactable.TypeInteract)
+            {
+                case InteractType.OneTime:
                 {
-                    switch (interactable.TypeInteract)
-                    {
-                        case InteractType.OneTime:
-                        {
-                            SetCurrentInteractable(null);
-                        }
-                            break;
-                        case InteractType.Toggle:
-                        {
-                            SetCurrentInteractable(interactable.NetIdentity);
-                            ToggleInteractionEvents();
-                        }
-                            break;
-                        case InteractType.Holding:
-                        {
-                            SetCurrentInteractable(interactable.NetIdentity);
-                        }
-                            break;
-                        default:
-                        {
-#if UNITY_EDITOR
-                            Debug.LogError("None interactable type");
-#endif
-                        }
-                            break;
-                    }
+                    SetCurrentInteractable(null);
                 }
+                    break;
+                case InteractType.Toggle:
+                {
+                    SetCurrentInteractable(interactable.NetIdentity);
+                    ToggleInteractionEvents();
+                }
+                    break;
+                case InteractType.Holding:
+                {
+                    SetCurrentInteractable(interactable.NetIdentity);
+                }
+                    break;
+                default:
+                {
+#if UNITY_EDITOR
+                    Debug.LogError("None interactable type");
+#endif
+                }
+                    break;
             }
         }
 
