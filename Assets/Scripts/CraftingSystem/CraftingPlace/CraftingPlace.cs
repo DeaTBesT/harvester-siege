@@ -445,6 +445,6 @@ namespace CraftingSystem
 
         [Server]
         public void InstantiateResourceServer(string resourceName, int amount) =>
-            ResourceData.InstantiateResource(resourceName, amount, transform.position);
+            ResourceData.InstantiateResource(resourceName, amount, transform);
     }
 }

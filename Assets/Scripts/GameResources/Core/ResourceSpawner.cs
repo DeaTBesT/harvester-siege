@@ -29,6 +29,6 @@ namespace GameResources.Core
             InstantiateResourceInternal(resourceName, amount);
 
         protected virtual void InstantiateResourceInternal(string resourceName, int amount) => 
-            ResourceData.InstantiateResource(_resourceData, transform.position);
+            ResourceData.InstantiateResource(_resourceData, transform);
     }
 }

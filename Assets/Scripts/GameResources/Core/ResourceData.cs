@@ -52,8 +52,7 @@ namespace GameResources.Core
         private void RemoveResourceRpc(int amount) => 
             _amount = Mathf.Clamp(_amount - amount, 0, int.MaxValue);
 
-        public static void InstantiateResource(ResourceData resourceData, Vector3 spawnPosition = default,
-            Quaternion spawnRotation = default)
+        public static void InstantiateResource(ResourceData resourceData, Transform spawnPosition)
         {
             if (resourceData == null)
             {
@@ -63,8 +62,10 @@ namespace GameResources.Core
                 return;
             }
             
-            var newResource = Object.Instantiate(resourceData.ResourceConfig.ResourcePrefab, spawnPosition,
-                spawnRotation);
+            var newResource = Object.Instantiate(resourceData.ResourceConfig.ResourcePrefab, spawnPosition);
+            newResource.transform.parent = null;
+            newResource.transform.position = spawnPosition.position;
+            newResource.transform.rotation = spawnPosition.rotation;
             NetworkServer.Spawn(newResource);
 
             if (newResource.TryGetComponent(out GameResource gameResource))
@@ -72,9 +73,8 @@ namespace GameResources.Core
                 gameResource.SetAmount(resourceData.AmountResource);
             }
         }
-
-        public static void InstantiateResource(string resourceName, int amount, Vector3 spawnPosition = default,
-            Quaternion spawnRotation = default)
+        
+        public static void InstantiateResource(string resourceName, int amount, Transform spawnPosition)
         {
             if (string.IsNullOrEmpty(resourceName))
             {
@@ -95,8 +95,10 @@ namespace GameResources.Core
                 return;
             }
 
-            var newResource = Object.Instantiate(resourceConfig.ResourcePrefab, spawnPosition,
-                spawnRotation);
+            var newResource = Object.Instantiate(resourceConfig.ResourcePrefab, spawnPosition);
+            newResource.transform.parent = null;
+            newResource.transform.position = spawnPosition.position;
+            newResource.transform.rotation = spawnPosition.rotation;
             NetworkServer.Spawn(newResource);
 
             if (newResource.TryGetComponent(out GameResource gameResource))
