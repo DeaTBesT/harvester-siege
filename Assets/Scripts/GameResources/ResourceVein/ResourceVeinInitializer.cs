@@ -22,7 +22,7 @@ namespace GameResources.ResourceVein
             }
         }
 
-        public override void Initialize() => 
+        public override void Initialize(params object[] objects) => 
             _resourceVeinStats.Initialize(_resourceSpawner);
     }
 }

@@ -29,7 +29,7 @@ namespace Core
             }
         }
 
-        public virtual void Deinitialize()
+        public virtual void Deinitialize(params object[] objects)
         {
             if (_inputModule != null)
             {

@@ -13,7 +13,7 @@ namespace Core
             
         }
 
-        public virtual void Deinitialize()
+        public virtual void Deinitialize(params object[] objects)
         {
             throw new System.NotImplementedException();
         }

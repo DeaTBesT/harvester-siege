@@ -26,7 +26,7 @@ namespace Player
             }
         }
 
-        public override void Deinitialize()
+        public override void Deinitialize(params object[] objects)
         {
             base.Deinitialize();
 

@@ -31,7 +31,7 @@ namespace Player
             _inputModule.OnAttack += UseWeapon;
         }
 
-        public override void Deinitialize()
+        public override void Deinitialize(params object[] objects)
         {
             if (_inputModule == null)
             {

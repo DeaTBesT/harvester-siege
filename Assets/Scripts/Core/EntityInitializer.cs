@@ -1,15 +1,18 @@
-﻿using Mirror;
+﻿using Interfaces;
+using Mirror;
 using UnityEngine;
 
 namespace Core
 {
-    public abstract class EntityInitializer : NetworkBehaviour
+    public abstract class EntityInitializer : NetworkBehaviour, IInitialize, IDeinitialize
     {
         [SerializeField] private bool _selfInitialize = true;
         [SerializeField] private bool _selfDeinitialize = true;
         
         public bool IsInitialized { get; protected set; }
 
+        public bool IsEnable { get; set; } = true;
+        
         public override void OnStartClient()
         {
             if (!_selfInitialize)
@@ -30,11 +33,16 @@ namespace Core
             Deinitialize();
         }
 
-        public abstract void Initialize();
+        public abstract void Initialize(params object[] objects);
 
-        public virtual void Deinitialize()
+        public virtual void Deinitialize(params object[] objects)
         {
           
+        }
+
+        public virtual void Quit()
+        {
+            
         }
     }
 }

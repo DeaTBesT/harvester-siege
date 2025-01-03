@@ -21,7 +21,7 @@ namespace Player
         public override void Initialize(params object[] objects) =>
             _gameResourcesManager = objects[0] as GameResourcesManager;
 
-        public override void Deinitialize() =>
+        public override void Deinitialize(params object[] objects) =>
             DropAllResources();
 
         public override void AddResource(ResourceData resourceData)

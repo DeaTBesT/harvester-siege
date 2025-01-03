@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace PlayerModule
 {
-    [RequireComponent(typeof(PlayerInitializer))]
     public class PlayerMovementController : EntityMovementController
     {
         private const float ADDED_ANGLE = 90f;

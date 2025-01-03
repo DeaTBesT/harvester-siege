@@ -134,7 +134,7 @@ namespace CraftingSystem
             _craftingUIPanel.Hide();
         }
 
-        public void Deinitialize()
+        public void Deinitialize(params object[] objects)
         {
             if (_timer != null)
             {

@@ -36,7 +36,7 @@ namespace CraftingSystem
             }
         }
 
-        public override void Initialize()
+        public override void Initialize(params object[] objects)
         {
             _timer = new DelayedTimer(_craftingPlace, HOLDING_TIME, DELAYED_TIME);
             
@@ -46,7 +46,7 @@ namespace CraftingSystem
                 _timer);
         }
 
-        public override void Deinitialize() => 
+        public override void Deinitialize(params object[] objects) => 
             _craftingPlace.Deinitialize();
     }
 }

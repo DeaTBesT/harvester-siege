@@ -40,7 +40,7 @@ namespace Player
             }
         }
 
-        public void Deinitialize()
+        public void Deinitialize(params object[] objects)
         {
             if (_resourcesManager != null)
             {

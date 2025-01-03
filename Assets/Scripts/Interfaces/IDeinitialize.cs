@@ -2,6 +2,6 @@
 {
     public interface IDeinitialize
     {
-        void Deinitialize();
+        void Deinitialize(params object[] objects);
     }
 }
