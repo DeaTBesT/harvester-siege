@@ -38,7 +38,7 @@ namespace DebugServices
         private void SpawnResource(int resourceId)
         {
             var resourceData = new ResourceData(_testResourceConfigs[resourceId], 1);
-            ResourceData.InstantiateResource(resourceData, transform.position);
+            ResourceData.InstantiateResource(resourceData, transform);
         }
     }
 }
