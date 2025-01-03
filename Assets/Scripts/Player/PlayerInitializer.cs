@@ -1,15 +1,17 @@
 ﻿using Core;
 using InputModule;
+using Interfaces;
 using Managers;
 using Mirror;
 using Player;
+using Player.Enums;
 using PlayerInputModule;
 using UnityEngine;
 
 namespace PlayerModule
 {
     [RequireComponent(typeof(InputHandler))]
-    public class PlayerInitializer : EntityInitializer
+    public class PlayerInitializer : EntityInitializer, INetworkLoad
     {
         [Header("Advanced components")] [SerializeField]
         private EntityStats _entityStats;
@@ -24,11 +26,13 @@ namespace PlayerModule
         [SerializeField] private CameraController _cameraController;
 
         [Header("Default components")] [SerializeField]
-        private Camera _camera;
+        private Camera _cameraPrefab;
 
         [SerializeField] private Rigidbody2D _rigidbody2D;
         [SerializeField] private Collider2D _collider;
         [SerializeField] private Transform _graphics;
+
+        private Camera _camera;
 
         protected override void OnValidate()
         {
@@ -88,16 +92,37 @@ namespace PlayerModule
             }
         }
 
-        public override void Initialize()
+        public override void OnStartServer() =>
+            NetworkLoadManager.Instance.AddLoader(this);
+
+        public override void OnStopServer() =>
+            NetworkLoadManager.Instance.RemoveLoader(this);
+
+        [Server]
+        public void LoadDataServer(NetworkConnectionToClient conn) =>
+            LoadDataRpc(conn, null);
+
+        [TargetRpc]
+        public void LoadDataRpc(NetworkConnectionToClient target, byte[] writerData) =>
+            Initialize();
+
+        public override void Initialize(params object[] objects)
         {
             if (IsInitialized)
             {
                 return;
             }
 
-            if (_camera == null)
+            if ((_camera == null) && (isLocalPlayer))
             {
                 _camera = Camera.main;
+
+                if (_camera == null)
+                {
+                    var cameraObject = Instantiate(_cameraPrefab, transform);
+                    cameraObject.transform.parent = null;
+                    cameraObject.TryGetComponent(out _camera);
+                }
             }
 
             var inputModule = new PlayerInput(_camera);
@@ -111,7 +136,7 @@ namespace PlayerModule
             _entityMovementController?.Initialize(inputModule,
                 _rigidbody2D);
             _cameraController?.Initialize(_camera,
-                transform);
+                _entityMovementController.transform);
             _entityWeaponController?.Initialize(inputModule,
                 _entityStats);
             _entityInteractionController?.Initialize(inputModule);
@@ -120,35 +145,59 @@ namespace PlayerModule
                 _entityWeaponController,
                 _collider,
                 _graphics);
-
             _entityInventoryController?.Initialize(gameResourcesManager);
             _playerUIController?.Initialize(gameResourcesManager);
 
             IsInitialized = true;
         }
 
+        /// <summary>
+        /// Инициализация для сервера, нужен для инициализации для других клиентов, включая самого клиента
+        /// </summary>
+        /// <param name="playerName"></param>
         [ClientRpc]
         public void InitializeAllRpc(string playerName)
         {
             transform.name = playerName;
             Initialize();
         }
-
+        
         [TargetRpc]
-        public void InitializeRpc(NetworkConnectionToClient target, string playerName)
+        public void InitializeLocal(string playerName)
         {
             transform.name = playerName;
             Initialize();
         }
 
-        public override void Deinitialize()
+        public override void Deinitialize(params object[] objects)
         {
+            var deinitializationState = (DeinitializationState)objects[0];
+
             _entityMovementController?.Deinitialize();
             _entityWeaponController?.Deinitialize();
             _entityInteractionController?.Deinitialize();
-            _entityInventoryController?.Deinitialize();
+            _playerUIController?.Deinitialize();
+
+            if (deinitializationState == DeinitializationState.Quit)
+            {
+                _entityInventoryController?.Deinitialize();
+            }
 
             IsInitialized = false;
         }
+
+        /// <summary>
+        /// Деинициализация для сервера, нужен для деинициализации для других клиентов, включая самого клиента
+        /// </summary>
+        [ClientRpc]
+        public void DeinitializeAllRpc() =>
+            Deinitialize(DeinitializationState.Transition);
+
+        [TargetRpc]
+        public void DeinitializeLocal() =>
+            Deinitialize(DeinitializationState.Transition);
+
+        public override void Quit() =>
+            Deinitialize(DeinitializationState.Quit);
     }
 }
