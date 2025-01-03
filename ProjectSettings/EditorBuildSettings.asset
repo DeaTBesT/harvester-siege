@@ -9,8 +9,17 @@ EditorBuildSettings:
     path: Assets/Scenes/Lobby.unity
     guid: 50cdd32e0e07ed747bac5624636eba59
   - enabled: 1
+    path: Assets/Scenes/OnlineScene.unity
+    guid: 1aa6456138a683040bb684ec971563ff
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/MBase.unity
+    guid: 70e5c58f4470c824ebb7741c773b3cfc
+  - enabled: 1
+    path: Assets/Scenes/MainScene.unity
+    guid: bab5db643f3d88048a80ff4c9ed53c2b
   - enabled: 1
     path: Assets/Plugins/Mirror/Examples/AdditiveLevels/Scenes/MirrorAdditiveLevelsOffline.unity
     guid: 9959d9d8e637be64dab77006a85135c1

@@ -430,7 +430,7 @@ MonoBehaviour:
   _playerUIController: {fileID: -7898121428172012787}
   _inputHandler: {fileID: 5401174703058281008}
   _cameraController: {fileID: 1203855106074696302}
-  _camera: {fileID: 0}
+  _cameraPrefab: {fileID: 8419523813155631594, guid: 0f0fa999180f1e846b7633ca035f0893, type: 3}
   _rigidbody2D: {fileID: 1210445423390179898}
   _collider: {fileID: 5435132544677257380}
   _graphics: {fileID: 6158160238949606769}
@@ -449,6 +449,7 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  _health: 0
 --- !u!114 &776484280130532936
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -964,7 +965,6 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   _weaponConfig: {fileID: 11400000, guid: 90afc9ead468357418bf3568221dbf47, type: 2}
-  _bulletPrefab: {fileID: -1705074592762720571, guid: e1903c91e83374942b5234be51bc17c2, type: 3}
   _spawnPivot: {fileID: 7783442445394460015}
 --- !u!1 &5308626998931659018
 GameObject:

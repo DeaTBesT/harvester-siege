@@ -4,6 +4,7 @@ using System.Linq;
 using Core;
 using Interfaces;
 using Mirror;
+using SceneManagement;
 using UnityEngine;
 
 namespace Managers
@@ -12,13 +13,22 @@ namespace Managers
     {
         private List<INetworkLoad> _networkLoaders = new();
 
-        public override void OnStartServer() =>
+        public override void OnStartServer()
+        {
             NetworkServer.OnConnectedEvent += OnPlayerConnected;
+            SceneTransition.OnClientTransitNewScene += OnClientTransitNewScene;
+        }
 
-        public override void OnStopServer() =>
+        public override void OnStopServer()
+        {
             NetworkServer.OnConnectedEvent -= OnPlayerConnected;
+            SceneTransition.OnClientTransitNewScene -= OnClientTransitNewScene;
+        }
 
         private void OnPlayerConnected(NetworkConnectionToClient conn) =>
+            StartCoroutine(LoadRoutine(conn));
+
+        private void OnClientTransitNewScene(NetworkConnectionToClient conn) => 
             StartCoroutine(LoadRoutine(conn));
 
         private IEnumerator LoadRoutine(NetworkConnectionToClient conn)
@@ -26,7 +36,6 @@ namespace Managers
             yield return new WaitUntil(() => conn.identity != null);
 
 #if UNITY_EDITOR
-
             Debug.Log($"{conn.identity.name} is exist");
 #endif
             if (!conn.identity.TryGetComponent(out EntityInitializer initializer))
