@@ -5,18 +5,66 @@ using GameResources.Core;
 using Interfaces;
 using Managers;
 using Mirror;
+using Player.CustomSerialization;
 using UnityEngine;
 using Utils.Networking;
 
 namespace Player
 {
-    public class PlayerInventoryController : EntityInventoryController, IInstantiateResource
+    public class PlayerInventoryController : EntityInventoryController, IInstantiateResource, INetworkLoad
     {
         private GameResourcesManager _gameResourcesManager;
 
         private List<ResourceData> _resourcesData = new();
 
         public List<ResourceData> ResourcesData => _resourcesData;
+
+        public override void OnStartServer() => 
+            NetworkLoadManager.Instance.AddLoader(this);
+        
+        public override void OnStopServer() => 
+            NetworkLoadManager.Instance.RemoveLoader(this);
+
+        [Server]
+        public void LoadDataServer(NetworkConnectionToClient conn)
+        {
+            var resourceNameList = new List<string>();
+            var resourceAmountList = new List<int>();
+
+            foreach (var resourceData in _resourcesData)
+            {
+                resourceNameList.Add(
+                    NetworkScriptableObjectSerializer.SerializeScriptableObject(resourceData.ResourceConfig));
+                resourceAmountList.Add(resourceData.AmountResource);
+            }
+
+            var data = new PlayerInventoryControllerData(resourceNameList, resourceAmountList);
+
+            var writer = new NetworkWriter();
+            writer.WritePlayerInventoryControllerData(data);
+            var writerData = writer.ToArray();
+
+            LoadDataRpc(conn, writerData);
+        }
+
+        [TargetRpc]
+        public void LoadDataRpc(NetworkConnectionToClient target, byte[] writerData)
+        {
+            _resourcesData.Clear();
+            
+            var reader = new NetworkReader(writerData);
+            var data = reader.ReadPlayerInventoryControllerData();
+
+            for (var i = 0; i < data.GameResourceNameList.Count; i++)
+            {
+                var resourceName = data.GameResourceNameList[i];
+                var resourceAmount = data.GameResourceAmountList[i];
+
+                var resourceConfig =
+                    (ResourceConfig)NetworkScriptableObjectSerializer.DeserializeScriptableObject(resourceName);
+                _resourcesData.Add(new ResourceData(resourceConfig, resourceAmount));
+            }
+        }
         
         public override void Initialize(params object[] objects) =>
             _gameResourcesManager = objects[0] as GameResourcesManager;
