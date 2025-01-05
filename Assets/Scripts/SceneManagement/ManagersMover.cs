@@ -10,7 +10,7 @@ namespace SceneManagement
 
         public override void OnStartServer()
         {
-            if (!isLocalPlayer)
+            if (!isServer)
             {
                 return;
             }
