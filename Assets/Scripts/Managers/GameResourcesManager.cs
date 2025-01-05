@@ -49,6 +49,8 @@ namespace Managers
         [TargetRpc]
         public void LoadDataRpc(NetworkConnectionToClient target, byte[] writerData)
         {
+            _resourcesData.Clear();
+            
             var reader = new NetworkReader(writerData);
             var data = reader.ReadGameResourcesManagerData();
 
