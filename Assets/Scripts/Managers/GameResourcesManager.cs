@@ -65,11 +65,11 @@ namespace Managers
             OnChangeResourcesData?.Invoke(_resourcesData);
         }
 
-        public void AddResource(ResourceConfig resourceConfig, int amount = 1) => 
+        public void AddResource(ResourceConfig resourceConfig, int amount = 1) =>
             AddResourceCmd(NetworkScriptableObjectSerializer.SerializeScriptableObject(resourceConfig), amount);
 
         [Command(requiresAuthority = false)]
-        private void AddResourceCmd(string resourceName, int amount) => 
+        private void AddResourceCmd(string resourceName, int amount) =>
             AddResourceRpc(resourceName, amount);
 
         [ClientRpc]
@@ -79,7 +79,7 @@ namespace Managers
                 (ResourceConfig)NetworkScriptableObjectSerializer.DeserializeScriptableObject(resourceName);
             var resourceData = _resourcesData.FirstOrDefault(x =>
                 x.ResourceConfig.TypeResource == resourceConfig.TypeResource);
-            
+
             if (resourceData != null)
             {
                 resourceData.AddResource(amount);
@@ -91,8 +91,8 @@ namespace Managers
                 OnChangeResourcesData?.Invoke(_resourcesData);
             }
         }
-        
-        public void RemoveResource(ResourceConfig resourceConfig, int amount = 1) => 
+
+        public void RemoveResource(ResourceConfig resourceConfig, int amount = 1) =>
             RemoveResourceCmd(NetworkScriptableObjectSerializer.SerializeScriptableObject(resourceConfig), amount);
 
         [Command(requiresAuthority = false)]
