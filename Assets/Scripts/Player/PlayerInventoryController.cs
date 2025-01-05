@@ -101,6 +101,8 @@ namespace Player
             {
                 _resourcesData.Add(new ResourceData(gameResource, amount));
             }
+            
+            SendMessage();
         }
         
         public override void RemoveResource(ResourceData resourceData)
@@ -132,6 +134,8 @@ namespace Player
             {
                 _resourcesData.Remove(resourceData);
             }
+            
+            SendMessage();
         }
         
         public override void DropResource(ResourceData resourceData)
@@ -186,6 +190,7 @@ namespace Player
             }
 
             _resourcesData.Remove(resourceData);
+            SendMessage();
         }
 
         public override void DropAllResources()
@@ -207,6 +212,35 @@ namespace Player
             if (Input.GetKeyDown(KeyCode.X))
             {
                 DropAllResources();
+            }
+        }
+
+        private void SendMessage() => 
+            SendMessageCmd();
+
+        [Command]
+        private void SendMessageCmd() => 
+            SendMessageRpc();
+
+        [ClientRpc]
+        private void SendMessageRpc() => 
+            NetworkScenesProvider.Instance.SendPlayerInventoryData(netIdentity, _resourcesData);
+
+        public void UpdateData(byte[] writerData)
+        {
+            _resourcesData.Clear();
+            
+            var reader = new NetworkReader(writerData);
+            var data = reader.ReadPlayerInventoryControllerData();
+
+            for (var i = 0; i < data.GameResourceNameList.Count; i++)
+            {
+                var resourceName = data.GameResourceNameList[i];
+                var resourceAmount = data.GameResourceAmountList[i];
+
+                var resourceConfig =
+                    (ResourceConfig)NetworkScriptableObjectSerializer.DeserializeScriptableObject(resourceName);
+                _resourcesData.Add(new ResourceData(resourceConfig, resourceAmount));
             }
         }
     }
