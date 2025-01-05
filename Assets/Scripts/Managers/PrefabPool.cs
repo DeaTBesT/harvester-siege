@@ -14,7 +14,7 @@ namespace Managers
         private GameObjectPool _objectPool;
 
         public PoolType TypePool => _poolType;
-        
+
         private void OnValidate()
         {
             var str = _prefab == null ? "Prefab pool" : $"Prefab pool: {_prefab.name}";
@@ -37,8 +37,14 @@ namespace Managers
         private void UnspawnHandler(GameObject spawned) =>
             _objectPool.Return(spawned);
 
-        public GameObject Get() => 
-            _objectPool.Get();
+        public GameObject Get(Transform owner)
+        {
+            var @object = _objectPool.Get();
+            @object.transform.SetParent(owner.transform);
+            @object.transform.parent = null;
+
+            return @object;
+        }
 
         public void Return(GameObject @object) => 
             _objectPool.Return(@object);
